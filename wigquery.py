@@ -92,7 +92,6 @@ def getgamecounts(): # getting counts per gametype and roc/tft ratios
 			tftratio = tftgames / rocgames
 			tftoverlap = ceil(overlapgames / (tftratio + 1) * tftratio)
 			rocoverlap = floor(overlapgames / (tftratio + 1))
-			# print(gametype, "overlap", overlapgames, "ratio", tftratio, "to roc", rocoverlap, "to tft", tftoverlap, "sum", rocoverlap + tftoverlap)
 			estimatedtftgames = tftgames + tftoverlap
 			estimatedrocgames = rocgames + rocoverlap
 		except:
@@ -100,7 +99,10 @@ def getgamecounts(): # getting counts per gametype and roc/tft ratios
 			tftratio = None
 			tftgames += overlapgames
 			overlapgames = 0
-		gamecounts[gametype] = {'rocgames': rocgames, 'tftgames': tftgames, 'overlapgames': overlapgames, 'tftratio': tftratio, 'estimatedtftgames': estimatedtftgames, 'estimatedrocgames': estimatedrocgames}
+		gamecounts[gametype] = {'rocgames': rocgames, 'tftgames': tftgames, 
+								'overlapgames': overlapgames, 'tftratio': tftratio, 
+								'estimatedtftgames': estimatedtftgames, 
+								'estimatedrocgames': estimatedrocgames}
 
 	return gamecounts
 

@@ -28,3 +28,12 @@ data presentations:
 * total games per day over year (stacked bar of all gametypes)
 * separated by gametype: average games per hour over week (heatmap)
 * ???
+
+
+some useful gameIDs:
+azeroth 21919343 = jan 1 2016
+azeroth 22437878 = jan 1 2017
+azeroth 22671000 = june 20 2017 9pm
+
+northrend 76682523 = jan 1 2017
+northrend 77664000 = june 26 2017 2pm
