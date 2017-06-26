@@ -1,5 +1,5 @@
 # wig-heat
-a set of Python3 tools to scrape, process, and visualize the data on [http://classic.battle.net/war3/ladder/w3xp-ladders.aspx?Gateway=Northrend](Blizzard's war3 battle.net ladders listings).
+a set of Python3 tools to scrape, process, and visualize the data on [Blizzard's war3 battle.net ladders listings](http://classic.battle.net/war3/ladder/w3xp-ladders.aspx?Gateway=Northrend).
 
 todo:
 
