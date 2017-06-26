@@ -1,7 +1,8 @@
 # wig-heat
-war3 game listing webscraping/parsing/datavis
+a set of Python3 tools to scrape, process, and visualize the data on [http://classic.battle.net/war3/ladder/w3xp-ladders.aspx?Gateway=Northrend](Blizzard's war3 battle.net ladders listings).
 
 todo:
+
 ✅ sequential scraping with error handling
 
 ✅ parsing game info from html
