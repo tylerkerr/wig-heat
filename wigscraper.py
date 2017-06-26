@@ -11,15 +11,6 @@ import sqlite3
 baseurl = 'http://classic.battle.net/war3/ladder/w3xp-game-detail.aspx'
 consecutiveerrorlimit = 10
 
-'''
-azeroth 21919343 = jan 1 2016
-azeroth 22437878 = jan 1 2017
-azeroth 22671000 = june 20 2017 9pm
-
-northrend 77664000 = june 26 2017 2pm
-northrend 76682523 = jan 1 2017
-'''
-
 # sqlite globals
 def dbinit(dbname):
     global conn 
