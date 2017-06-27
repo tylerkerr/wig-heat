@@ -157,12 +157,11 @@ def printgamecounts(gamecounts):
 
 def gettftgames(gametype, gamecounts):
 	tftgames = []
-	for gametype in gametypes['tft']:
-		gtgamesq = games.select((games.c.gametype == gametype) & (games.c.gamelength > minlength))
-		gtgames = run(gtgamesq)
-		for game in gtgames:
-			if istftgame(gametype, game['gamemap'], gamecounts[gametype]['tftratio']):
-				tftgames.append(game)
+	gtgamesq = games.select((games.c.gametype == gametype) & (games.c.gamelength > minlength))
+	gtgames = run(gtgamesq)
+	for game in gtgames:
+		if istftgame(gametype, game['gamemap'], gamecounts[gametype]['tftratio']):
+			tftgames.append(game)
 	return tftgames
 
 def getweekdayfromepoch(epoch):
@@ -175,6 +174,7 @@ def getdatefromepoch(epoch):
 	return int(strftime('%j', gmtime(epoch)))
 
 def makeviz_weekheatmap(gateway, gamelist, gametype):
+	filename = 'weekheatmap-' + gateway.lower() + '-' + gametype.lower().replace(' ', '') + '.csv'
 	weekdays = {}
 	for d in range(7):
 		weekdays[d] = {}
@@ -185,23 +185,21 @@ def makeviz_weekheatmap(gateway, gamelist, gametype):
 		hour = gethourfromepoch(game['gamedate'])
 		weekdays[weekday][hour] = weekdays[weekday][hour] + 1
 
-	with open('weekheatmap-' + gateway + gametype + '.csv', 'w') as csvfile:
+	with open(filename, 'w') as csvfile:
 		fieldnames = ['weekday', 'hour', 'games']
 		writer = DictWriter(csvfile, fieldnames=fieldnames)
 		writer.writeheader()
 		for day in weekdays:
 			for hour in weekdays[day]:
 				writer.writerow({'weekday': day, 'hour': hour, 'games': weekdays[day][hour]})
-	# return weekdays
 
 def main():
 	print(getnewest())
 	gamecounts = getgamecounts()
 	printgamecounts(gamecounts)
 
-	sologames = gettftgames('Solo', gamecounts)
-
 	for gametype in gametypes['tft']:
+		# print(gametype)
 		makeviz_weekheatmap(gateway, gettftgames(gametype, gamecounts), gametype)
 
 if __name__ == '__main__':
