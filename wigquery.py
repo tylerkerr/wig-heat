@@ -9,6 +9,8 @@ from math import floor, ceil
 from csv import DictWriter
 import random
 
+# --------------- INIT ---------------
+
 try:
 	gateway = sys.argv[1]
 	assert gateway in ['Azeroth', 'Lordaeron', 'Northrend', 'Kalimdor']
@@ -28,7 +30,7 @@ gametypes = {'tft': ['Solo', 'Random 2v2', 'Random 3v3', 'Random 4v4', 'Arranged
 					 'Arranged 3v3', 'Arranged 4v4', 'Tournament', 'FFA'], 
 			'roc': ['Solo', 'Random 2v2', 'Random 3v3', 'Arranged 2v2', 'Arranged 3v3', 'FFA']}
 
-# maps as of June 26 2017
+# maps as of June 26 2017. things will get a little messy if/when this changes
 
 rocmaps = {'Solo': ['Plunder Isle', 'Frostsabre', 'Legends', 'Lost Temple', 'Tranquil Paths', 
 					'Gnoll Wood', 'Moonglade', 'Scorched Basin'],
@@ -69,7 +71,7 @@ tftmaps = {'Solo': ['Secret Valley', 'Melting Valley', 'Echo Isles', 'Terenas St
 				'Silverpine Forest', 'Deadlock', "Mur'gul Oasis", 'Twilight Ruins', 
 				'Bloodstone Mesa', 'Copper Canyon', 'Battleground']}
 
-# TODO: arranged team maps. need a crew2queue just to see the list
+# --------------- UTIL ---------------
 
 def run(query):
     results = query.execute()
@@ -78,7 +80,39 @@ def run(query):
 def rprint(lst):
 	[print(row) for row in lst]
 
-def tftratiorandom(tftratio):
+def getnewest():
+	dateq = games.select().order_by(games.c.gamedate.desc()).limit(1)
+	return int(run(dateq)[0]['gamedate'])
+
+def getoldest():
+	dateq = games.select().order_by(games.c.gamedate.asc()).limit(1)
+	return int(run(dateq)[0]['gamedate'])
+
+def getweekdayfromepoch(epoch): # int 0-6, 0 = sunday
+	return int(strftime('%w', gmtime(epoch)))
+
+def gethourfromepoch(epoch): # int 0-23, UTC
+	return int(strftime('%H', gmtime(epoch)))
+
+def getyeardayfromepoch(epoch): # int 1-366, 1 = jan 1st 
+	return int(strftime('%j', gmtime(epoch)))
+
+def getyearfromepoch(epoch): # int 1-9999...
+	return int(strftime('%Y', gmtime(epoch)))
+
+def daysinyear(year): # if i must...
+	if year % 4 != 0:
+		return 365
+	elif year % 100 != 0:
+		return 366
+	elif year % 400 != 0:
+		return 365
+	else:
+		return 366
+
+# --------------- ROC/TFT DIFFERENTIATION ---------------
+
+def tftratiorandom(tftratio): # randomly return true or false, weighted by the tft:roc ratio provided
 	if tftratio == None:
 		return True
 	if random.uniform(0, tftratio+1) > 1:
@@ -86,12 +120,9 @@ def tftratiorandom(tftratio):
 	else:
 		return False
 
-def getnewest():
-	dateq = games.select().order_by(games.c.gamedate.desc()).limit(1)
-	date = datetime.fromtimestamp(int(run(dateq)[0]['gamedate']), timezone.utc)
-	return "newest game is from %s at %s" % (gateway, date)
-
-def istftgame(gametype, gamemap, tftratio):
+def istftgame(gametype, gamemap, tftratio): # returns true if we think it's a tft game.
+											# first check using mappools. if it's an overlapping map,
+											# randomly assign tft/roc using tftratiorandom()
 	if gametype not in gametypes['roc']:
 		return True
 	if gamemap not in rocmaps[gametype]:
@@ -103,6 +134,15 @@ def istftgame(gametype, gamemap, tftratio):
 		sys.exit(1)
 	if gamemap in tftmaps[gametype] and gamemap in rocmaps[gametype]:
 		return tftratiorandom(tftratio)
+
+def gettftgames(gametype): # return a list of all games we thing are tft for a given gametype
+	tftgames = []
+	gtgamesq = games.select((games.c.gametype == gametype) & (games.c.gamelength > minlength))
+	gtgames = run(gtgamesq)
+	for game in gtgames:
+		if istftgame(gametype, game['gamemap'], gamecounts[gametype]['tftratio']):
+			tftgames.append(game)
+	return tftgames
 
 def getgamecounts(): # getting counts per gametype and roc/tft ratios
 	gamecounts = {}
@@ -117,7 +157,7 @@ def getgamecounts(): # getting counts per gametype and roc/tft ratios
 			overlapq = games.select((games.c.gametype == gametype) & games.c.gamemap.in_(tftmaps[gametype]) 
 								& games.c.gamemap.in_(rocmaps[gametype]) & (games.c.gamelength > minlength))
 			overlapgames = len(run(overlapq))
-		else:
+		else: # we don't need to do anything wild if the gametype isn't in roc, such as 4s RT or tournament
 			tftq = games.select((games.c.gametype == gametype) & (games.c.gamelength > minlength))
 			tftgames = len(run(tftq))
 			rocgames = 0
@@ -128,12 +168,12 @@ def getgamecounts(): # getting counts per gametype and roc/tft ratios
 			estimatedtftgames = tftgames + tftoverlap
 			estimatedrocgames = rocgames + rocoverlap
 		except:
-			# print(gametype)
 			tftratio = None
 			tftgames += overlapgames
 			overlapgames = 0
 			estimatedtftgames = tftgames
 			estimatedrocgames = rocgames
+
 		gamecounts[gametype] = {'rocgames': rocgames, 'tftgames': tftgames, 
 								'overlapgames': overlapgames, 'tftratio': tftratio, 
 								'estimatedtftgames': estimatedtftgames, 
@@ -150,28 +190,11 @@ def printgamecounts(gamecounts):
 			temptype = gametype + '\t'
 		else:
 			temptype = gametype
-		# print(gametype, '    \t', gamecounts[gametype]['estimatedtftgames'], '\t (RoC', 
-			  # gamecounts[gametype]['estimatedrocgames'], ')\t ratio', ratio)
 		print('%s   \t%s\t (RoC %s) \tratio %s' % (temptype, 
 			gamecounts[gametype]['estimatedtftgames'], gamecounts[gametype]['estimatedrocgames'], ratio))
 
-def gettftgames(gametype, gamecounts):
-	tftgames = []
-	gtgamesq = games.select((games.c.gametype == gametype) & (games.c.gamelength > minlength))
-	gtgames = run(gtgamesq)
-	for game in gtgames:
-		if istftgame(gametype, game['gamemap'], gamecounts[gametype]['tftratio']):
-			tftgames.append(game)
-	return tftgames
 
-def getweekdayfromepoch(epoch):
-	return int(strftime('%w', gmtime(epoch)))
-
-def gethourfromepoch(epoch):
-	return int(strftime('%H', gmtime(epoch)))
-
-def getdatefromepoch(epoch):
-	return int(strftime('%j', gmtime(epoch)))
+# --------------- DATA OUTPUT FUNCTIONS ---------------
 
 def makeviz_weekheatmap(gateway, gamelist, gametype):
 	filename = 'weekheatmap-' + gateway.lower() + '-' + gametype.lower().replace(' ', '') + '.csv'
@@ -193,14 +216,77 @@ def makeviz_weekheatmap(gateway, gamelist, gametype):
 			for hour in weekdays[day]:
 				writer.writerow({'weekday': day, 'hour': hour, 'games': weekdays[day][hour]})
 
+def makeviz_allgamesbydaystacked(gateway):
+	filename = 'allgamesbydaystacked-' + gateway.lower() + '.csv'
+	gamevalueinit = {'Solo': 0, 'Random 2v2': 0, 'Random 3v3': 0, 
+				     'Random 4v4': 0, 'Arranged 2v2': 0,
+				     'Arranged 3v3': 0, 'Arranged 4v4': 0, 
+				     'Tournament': 0,	'FFA': 0}
+	startdate = getoldest()
+	enddate = getnewest()
+	startyear = getyearfromepoch(startdate)
+	startday = getyeardayfromepoch(startdate)
+	endyear = getyearfromepoch(enddate)
+	endday = getyeardayfromepoch(enddate)
+	years = [y for y in range(startyear, endyear+1)]
+	yeardict = {}
+	for year in years:
+		yeardict[year] = {}
+		for day in range(1, daysinyear(year)+1):
+			if year == years[-1]:
+				if day > endday:
+					break # stop at last day of data on final year
+				else:
+					yeardict[year][day] = gamevalueinit.copy()
+			elif year == years[0]:
+				if day < startday:
+					pass # don't operate on days before the first day
+				else:
+					yeardict[year][day] = gamevalueinit.copy()
+			else:
+				yeardict[year][day] = gamevalueinit.copy()
+				
+	for gametype in gametypes['tft']:
+		gtgames = gettftgames(gametype)
+		for game in gtgames:
+			gameyear = getyearfromepoch(game['gamedate'])
+			gameday = getyeardayfromepoch(game['gamedate'])
+			yeardict[gameyear][gameday][gametype] += 1
+
+	with open(filename, 'w') as csvfile:
+		fieldnames = ['year', 'day']
+		for gametype in gametypes['tft']:
+			fieldnames.append(gametype)
+		writer = DictWriter(csvfile, fieldnames=fieldnames)
+		writer.writeheader()
+		for year in yeardict:
+			for day in yeardict[year]:
+				writer.writerow({'year': year, 'day': day, 'Solo': yeardict[year][day]['Solo'], 
+								 'Random 2v2': yeardict[year][day]['Random 2v2'],
+								 'Random 3v3': yeardict[year][day]['Random 3v3'],
+								 'Random 4v4': yeardict[year][day]['Random 4v4'],
+								 'Arranged 2v2': yeardict[year][day]['Arranged 2v2'],
+								 'Arranged 3v3': yeardict[year][day]['Arranged 3v3'],
+								 'Arranged 4v4': yeardict[year][day]['Arranged 4v4'],
+								 'Tournament': yeardict[year][day]['Tournament'],
+								 'FFA': yeardict[year][day]['FFA']})
+
+
+# --------------- MAIN ---------------
+
 def main():
-	print(getnewest())
+	olddate = datetime.fromtimestamp(getoldest(), timezone.utc)
+	print("oldest game is from %s at %s" % (gateway, olddate))
+	newdate = datetime.fromtimestamp(getnewest(), timezone.utc)
+	print("newest game is from %s at %s" % (gateway, newdate))
+	global gamecounts 
 	gamecounts = getgamecounts()
 	printgamecounts(gamecounts)
 
-	for gametype in gametypes['tft']:
+	# for gametype in gametypes['tft']:
 		# print(gametype)
-		makeviz_weekheatmap(gateway, gettftgames(gametype, gamecounts), gametype)
+		# makeviz_weekheatmap(gateway, gettftgames(gametype), gametype)
+	makeviz_allgamesbydaystacked(gateway)
 
 if __name__ == '__main__':
 	main()
