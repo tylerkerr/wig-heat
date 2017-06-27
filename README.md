@@ -13,11 +13,11 @@ todo:
 
 ✅ discarding non-TFT games (mappool, find roc/tft ratio, extrapolate on overlap games)
 
-❌ figuring out which data to visualize
+✅ figuring out which data to visualize
 
-❌ writing queries to pass this data to d3.js
+✅ writing queries to pass this data to d3.js
 
-❌ creating visualizations with d3.js
+✅ creating visualizations with d3.js
 
 ❌ creating interface for the visualizations
 
@@ -25,8 +25,13 @@ todo:
 
 
 data presentations:
+
 * total games per day over year (stacked bar of all gametypes)
-* separated by gametype: average games per hour over week (heatmap)
+
+* separated by gametype: total games per day (calendar heatmap)
+
+* separated by gametype: average games per hour over week (week/hour heatmap)
+
 * ???
 
 
@@ -34,11 +39,16 @@ some useful gameIDs:
 
 azeroth 21919343 = jan 1 2016
 
+(518k games in 2016)
+
 azeroth 22437878 = jan 1 2017
 
 azeroth 22671000 = june 20 2017 9pm
 
 
+northrend 74891032 = jan 1 2016
+
+(1.791m games in 2016)
 
 northrend 76682523 = jan 1 2017
 
