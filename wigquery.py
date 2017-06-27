@@ -21,8 +21,9 @@ db = create_engine(dbname)
 metadata = MetaData(db)
 games = Table('wiggames', metadata, autoload=True)
 
-gametypes = {'tft': ['Solo', 'Random 2v2', 'Random 3v3', 'Random 4v4', 'FFA'], 
-			'roc': ['Solo', 'Random 2v2', 'Random 3v3', 'FFA']}
+gametypes = {'tft': ['Solo', 'Random 2v2', 'Random 3v3', 'Random 4v4', 'Arranged 2v2',
+					 'Arranged 3v3', 'Arranged 4v4', 'Tournament', 'FFA'], 
+			'roc': ['Solo', 'Random 2v2', 'Random 3v3', 'Arranged 2v2', 'Arranged 3v3', 'FFA']}
 
 # maps as of June 26 2017
 
@@ -31,6 +32,10 @@ rocmaps = {'Solo': ['Plunder Isle', 'Frostsabre', 'Legends', 'Lost Temple', 'Tra
 		'Random 2v2': ['Duskwood', 'Harvest Moon', 'Lost Temple', 'Gnoll Wood', 'Scorched Basin', 
 					'Stromguarde', 'Swamp of Sorrows', 'Golems In The Mist', 'The Crucible'],
 		'Random 3v3': ['Dark Forest', 'Dragon Fire', 'Stromguarde', 'Swamp of Sorrows', 
+					'Timbermaw Hold', 'Battleground', 'Plains of Snow', 'The Crucible'],
+		'Arranged 2v2': ['Duskwood', 'Harvest Moon', 'Lost Temple', 'Gnoll Wood', 'Scorched Basin', 
+					'Stromguarde', 'Swamp of Sorrows', 'Golems In The Mist', 'The Crucible'],
+		'Arranged 3v3': ['Dark Forest', 'Dragon Fire', 'Stromguarde', 'Swamp of Sorrows', 
 					'Timbermaw Hold', 'Battleground', 'Plains of Snow', 'The Crucible'],
 		'FFA': ['Harvest Moon', 'Lost Temple', 'Mystic Isles', 'Gnoll Wood', 'Scorched Basin', 
 				'Stromguarde', 'Swamp of Sorrows', 'Battleground', 'The Crucible']}
@@ -47,6 +52,16 @@ tftmaps = {'Solo': ['Secret Valley', 'Melting Valley', 'Echo Isles', 'Terenas St
 		'Random 4v4': ['Battleground', 'Cherryville', 'Deadlock', 'Dragon Falls', 'Full Scale Assault', 
 					'Golems In The Mist', 'Market Square', "Mur'gul Oasis", 'Twilight Ruins', 
 					'Death Knell', 'Deadlands', 'Last Man Standing'],
+		'Arranged 2v2': ['Centaur Grove', 'Goldshire', 'Lost Temple', 'Phantom Grove', 'Turtle Rock', 
+					'Twisted Meadows', 'Gnoll Wood', 'Moonglade', 'Avalanche', 'Stone Cold Mountain', 
+					'River of Souls', 'Duskwood'],
+		'Arranged 3v3': ['Bloodstone Mesa', 'Copper Canyon', 'Dragonblight', 'Everfrost', 'Gnoll Wood',
+					'Highperch', 'Monsoon', 'Rice Fields', 'River of Souls', 'Silverpine Forest',
+					'Sunrock Cove', 'Typhoon', 'Upper Kingdom'],
+		'Arranged 4v4': ['Battleground', 'Cherryville', 'Deadlock', 'Dragon Falls', 'Friends',
+					'Full Scale Assault', 'Gold Rush', 'Golems In The Mist', 'Hurricane Isle',
+					"Mur'gul Oasis", 'Slalom'],
+		'Tournament': [],
 		'FFA': ['Deathrose', 'Twisted Meadows', 'Duststorm', 'Emerald Shores', 'Monsoon', 
 				'Silverpine Forest', 'Deadlock', "Mur'gul Oasis", 'Twilight Ruins', 
 				'Bloodstone Mesa', 'Copper Canyon', 'Battleground']}
@@ -69,7 +84,7 @@ def tftratiorandom(tftratio):
 def getnewest():
 	dateq = games.select().order_by(games.c.gamedate.desc()).limit(1)
 	date = datetime.fromtimestamp(int(run(dateq)[0]['gamedate']), timezone.utc)
-	print("newest game is from %s at %s" % (gateway, date))
+	return "newest game is from %s at %s" % (gateway, date)
 
 def getgamecounts(): # getting counts per gametype and roc/tft ratios
 	gamecounts = {}
@@ -99,14 +114,36 @@ def getgamecounts(): # getting counts per gametype and roc/tft ratios
 			tftratio = None
 			tftgames += overlapgames
 			overlapgames = 0
+			estimatedtftgames = tftgames
+			estimatedrocgames = rocgames
 		gamecounts[gametype] = {'rocgames': rocgames, 'tftgames': tftgames, 
 								'overlapgames': overlapgames, 'tftratio': tftratio, 
 								'estimatedtftgames': estimatedtftgames, 
 								'estimatedrocgames': estimatedrocgames}
-
 	return gamecounts
 
-gamecounts = getgamecounts()
+def printgamecounts(gamecounts):
+	for gametype in gametypes['tft']:
+		if gamecounts[gametype]['tftratio'] == None:
+			ratio = 'n/a'
+		else:
+			ratio = gamecounts[gametype]['tftratio']
+		if gametype == 'FFA' or  gametype == 'Solo': # alignment hack
+			temptype = gametype + '\t'
+		else:
+			temptype = gametype
+		# print(gametype, '    \t', gamecounts[gametype]['estimatedtftgames'], '\t (RoC', 
+			  # gamecounts[gametype]['estimatedrocgames'], ')\t ratio', ratio)
+		print('%s   \t%s\t (RoC %s) \tratio %s' % (temptype, 
+			gamecounts[gametype]['estimatedtftgames'], gamecounts[gametype]['estimatedrocgames'], ratio))
 
-for gametype in gametypes['tft']:
-	print(gametype, gamecounts[gametype])
+
+def main():
+	print(getnewest())
+	gamecounts = getgamecounts()
+	printgamecounts(gamecounts)
+
+if __name__ == '__main__':
+	main()
+
+
