@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Multiple line chart with legend</title>
+        
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href='http://fonts.googleapis.com/css?family=Source+Code+Pro' rel='stylesheet' type='text/css'>
+        <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
+        <!--[if lte IE 8]>
+            <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.5.0/grids-responsive-old-ie-min.css">
+        <![endif]-->
+        <!--[if gt IE 8]><!-->
+            <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.5.0/grids-responsive-min.css">
+        <!--<![endif]-->
+        <link href='allgamesline.css' rel='stylesheet' type='text/css'>
+        
+        <!-- // js dependencies for charts -->
+        <script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+        <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+        <!-- http://momentjs.com/ to parse dates-->
+        <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.2/moment.min.js"></script>
+        <!-- http://fgnass.github.io/spin.js/ -->
+        <script src="//cdnjs.cloudflare.com/ajax/libs/spin.js/2.0.1/spin.min.js"></script>
+        <!-- custom settings for spin loader -->
+        <script>
+          var opts = {
+              lines: 13, // The number of lines to draw
+              length: 6, // The length of each line
+              width: 4, // The line thickness
+              radius: 13, // The radius of the inner circle
+              corners: 1, // Corner roundness (0..1)
+              color: '#000', // #rgb or #rrggbb or array of colors
+              speed: 1.5, // Rounds per second
+              trail: 75, // Afterglow percentage
+              shadow: false, // Whether to render a shadow
+              hwaccel: false, // Whether to use hardware acceleration
+              className: 'spinner', // The CSS class to assign to the spinner
+              zIndex: 2e9, // The z-index (defaults to 2000000000)
+              top: '50%', // Top position relative to parent
+              left: '50%' // Left position relative to parent
+          };
+        </script>
+        <!-- d3-financial-components -->
+        <script src="js/fc.js"></script>
+        <!-- d3-files added to financial-components -->
+        <script src="js/lineMultiple.js"></script>
+        <script src="js/allgamesline-default.js"></script>
+        <script src="js/allgamesline-config.js"></script>
+        <script src="js/allgamesline-legend.js"></script>
+        <!-- render the chart -->
+        <script src="js/allgamesline.js"></script>
+
+    </head>
+    <body>
+        <div class="l-content main-wrapper fullscreen">
+
+            <div id="chart-wrap" class="fullscreen fullscreen-padding">
+                <header>
+                    <div id="chart-title-wrap">
+                        <h1>
+                            <span id="chart-title">Loading chart &hellip;</span>     
+                        </h1> 
+                    </div>
+                </header>
+                <section class="chart-fullscreen" id="chart-id">
+                    <aside id="legend-html"></aside>
+                </section>
+            </div>
+
+            <script src="js/allgamesline.js"></script>
+
+        </div> 
+
+    </body>
+</html>
