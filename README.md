@@ -53,3 +53,17 @@ northrend 74891032 = jan 1 2016
 northrend 76682523 = jan 1 2017
 
 northrend 77664000 = june 26 2017 2pm
+
+
+lordaeron 14644695 = jan 1 2016
+
+(397k games in 2016)
+
+lordaeron 15042407 = jan 1 2017
+
+
+kalimdor 31424145 = jan 1 2016
+
+(1.127m games in 2016)
+
+kalimdor 32551595 = jan 1 2017
