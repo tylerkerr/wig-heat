@@ -118,14 +118,14 @@ def daysinyear(year): # if i must...
 
 def adjusttimezone(gateway, epoch):
     # times gathered using EDT
-    if gateway == 'Azeroth': # azeroth needs no correction
-        return epoch
-    elif gateway == 'Lordaeron': # lordaeron needs -3h
-        return epoch - 10800
-    elif gateway == 'Northrend': # northrend needs +6h
-        return epoch + 21600
-    elif gateway == 'Kalimdor': # kalimdor needs +13h
-        return epoch + 46800
+    if gateway == 'Azeroth': # azeroth needs -5h
+        return epoch - 18000
+    elif gateway == 'Lordaeron': # lordaeron needs -8h
+        return epoch - 28800
+    elif gateway == 'Northrend': # northrend needs +1h
+        return epoch + 3600
+    elif gateway == 'Kalimdor': # kalimdor needs +8h
+        return epoch + 28800
 
 
 # --------------- ROC/TFT DIFFERENTIATION ---------------
@@ -308,6 +308,8 @@ def datagen_weekheatmap(gamecounts, gateway):
             gamedate = adjusttimezone(gateway, game['gamedate'])
             weekday = getweekdayfromepoch(gamedate)
             hour = gethourfromepoch(gamedate)
+            # print(game['gameid'], "orig epoch", game['gamedate'], "adj epoch", gamedate,
+                # "weekday", weekday, "hour", hour)
             weekdays[weekday][hour] = weekdays[weekday][hour] + 1
 
         with open(filename, 'w') as csvfile:
