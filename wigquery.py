@@ -4,15 +4,14 @@ import sys
 import os
 from sqlalchemy import *
 from datetime import datetime, timezone
-from time import strftime, gmtime
+from time import strftime, gmtime, time
 from math import floor, ceil
 from csv import DictWriter
 import random
 
 # --------------- INIT ---------------
 
-def initialize():
-    global gateway
+def initialize(gateway):
     global dbname
     global db
     global metadata
@@ -21,23 +20,19 @@ def initialize():
     global gametypes
     global rocmaps
     global tftmaps
-    try:
-        gateway = sys.argv[1]
-        assert gateway in ['Azeroth', 'Lordaeron', 'Northrend', 'Kalimdor']
-        assert os.path.exists(gateway + '.db')
-    except:
-        print('usage:', sys.argv[0], '[gateway]')
-        sys.exit(1)
+    # try:
+    #     gateway = sys.argv[1]
+    #     assert gateway in ['Azeroth', 'Lordaeron', 'Northrend', 'Kalimdor']
+    #     assert os.path.exists(gateway + '.db')
+    # except:
+    #     print('usage:', sys.argv[0], '[gateway]')
+    #     sys.exit(1)
 
-    
-    dbname = 'sqlite:///' + gateway + '.db'
-    
+    dbname = 'sqlite:///' + gateway + '.db'    
     db = create_engine(dbname)
-    
     metadata = MetaData(db)
-    
     games = Table('wiggames', metadata, autoload=True)
-    
+
     minlength = 3
     
     gametypes = {'tft': ['Solo', 'Random 2v2', 'Random 3v3', 'Random 4v4', 'Arranged 2v2',
@@ -150,7 +145,7 @@ def tftratiorandom(gameid, tftratio): # randomly return true or false, weighted 
     else:
         return False
 
-def istftgame(gametype, gamemap, gameid, tftratio): # returns true if we think it's a tft game.
+def istftgame(gamecounts, gametype, gamemap, gameid, tftratio): # returns true if we think it's a tft game.
                                             # first check using mappools. if it's an overlapping map,
                                             # randomly assign tft/roc using tftratiorandom()
     if gametype not in gametypes['roc']:
@@ -165,16 +160,18 @@ def istftgame(gametype, gamemap, gameid, tftratio): # returns true if we think i
     if gamemap in tftmaps[gametype] and gamemap in rocmaps[gametype]:
         return tftratiorandom(gameid, tftratio)
 
-def gettftgames(gametype): # return a list of all games we thing are tft for a given gametype
+def gettftgames(gamecounts, gametype): # return a list of all games we thing are tft for a given gametype
     tftgames = []
     gtgamesq = games.select((games.c.gametype == gametype) & (games.c.gamelength >= minlength))
     gtgames = run(gtgamesq)
     for game in gtgames:
-        if istftgame(gametype, game['gamemap'], game['gameid'], gamecounts[gametype]['tftratio']):
+        if istftgame(gamecounts, gametype, game['gamemap'], game['gameid'], gamecounts[gametype]['tftratio']):
             tftgames.append(game)
     return tftgames
 
 def getgamecounts(): # getting counts per gametype and roc/tft ratios
+    print("[-] calculating gamecounts")
+    starttime = time()
     gamecounts = {}
     for gametype in gametypes['tft']:
         allgamesq = games.select(games.c.gametype == gametype)
@@ -213,6 +210,8 @@ def getgamecounts(): # getting counts per gametype and roc/tft ratios
                                 'overlapgames': overlapgames, 'tftratio': tftratio, 
                                 'estimatedtftgames': estimatedtftgames, 
                                 'estimatedrocgames': estimatedrocgames}
+    totaltime = format(time() - starttime, '.2f')
+    print("[+] finished gamecounts in %ss" % totaltime)
     return gamecounts
 
 def printgamecounts(gamecounts):
@@ -233,31 +232,39 @@ def printgamecounts(gamecounts):
 
 def makeviz_simplecounts(gateway):
     for gametype in gametypes['tft']:
-        print(gametype, gamecounts[gametype]['estimatedtftgames'])
+        print(gametype, gamecounts[gametype]['allgames'])
 
 
-def makeviz_weekheatmap(gateway, gamelist, gametype):
-    filename = 'weekheatmap-' + gateway.lower() + '-' + gametype.lower().replace(' ', '') + '.csv'
-    weekdays = {}
-    for d in range(7):
-        weekdays[d] = {}
-        for h in range(24):
-            weekdays[d][h] = 0
-    for game in gamelist:
-        gamedate = adjusttimezone(gateway, game['gamedate'])
-        weekday = getweekdayfromepoch(gamedate)
-        hour = gethourfromepoch(gamedate)
-        weekdays[weekday][hour] = weekdays[weekday][hour] + 1
+def makeviz_weekheatmap(gamecounts, gateway):
+    print("[-] generating week heatmap")
+    starttime = time()
+    for gametype in gametypes['tft']:
+        gamelist = gettftgames(gamecounts, gametype)
+        filename = 'weekheatmap-' + gateway.lower() + '-' + gametype.lower().replace(' ', '') + '.csv'
+        weekdays = {}
+        for d in range(7):
+            weekdays[d] = {}
+            for h in range(24):
+                weekdays[d][h] = 0
+        for game in gamelist:
+            gamedate = adjusttimezone(gateway, game['gamedate'])
+            weekday = getweekdayfromepoch(gamedate)
+            hour = gethourfromepoch(gamedate)
+            weekdays[weekday][hour] = weekdays[weekday][hour] + 1
 
-    with open(filename, 'w') as csvfile:
-        fieldnames = ['weekday', 'hour', 'games']
-        writer = DictWriter(csvfile, fieldnames=fieldnames)
-        writer.writeheader()
-        for day in weekdays:
-            for hour in weekdays[day]:
-                writer.writerow({'weekday': day, 'hour': hour, 'games': weekdays[day][hour]})
+        with open(filename, 'w') as csvfile:
+            fieldnames = ['weekday', 'hour', 'games']
+            writer = DictWriter(csvfile, fieldnames=fieldnames)
+            writer.writeheader()
+            for day in weekdays:
+                for hour in weekdays[day]:
+                    writer.writerow({'weekday': day, 'hour': hour, 'games': weekdays[day][hour]})
+    totaltime = format(time() - starttime, '.2f')
+    print("[+] finished week heatmap in %ss" % totaltime)
 
-def makeviz_allgamesbydaystacked(gateway):
+def makeviz_allgamesbydaystacked(gamecounts, gateway):
+    print("[-] generating all games by day")
+    starttime = time()
     filename = 'allgamesbydaystacked-' + gateway.lower() + '.csv'
     gamevalueinit = {'Solo': 0, 'Random 2v2': 0, 'Random 3v3': 0, 
                      'Random 4v4': 0, 'Arranged 2v2': 0,
@@ -267,7 +274,7 @@ def makeviz_allgamesbydaystacked(gateway):
     enddate = getdatefromepoch(getnewest())
     gamesperdate = {}
     for gametype in gametypes['tft']:
-        gtgames = gettftgames(gametype)
+        gtgames = gettftgames(gamecounts, gametype)
         for game in gtgames:
             gamedate = getdatefromepoch(adjusttimezone(gateway, game['gamedate']))
             if not gamedate in gamesperdate:
@@ -290,27 +297,34 @@ def makeviz_allgamesbydaystacked(gateway):
                              'Arranged 4v4': gamesperdate[date]['Arranged 4v4'],
                              'Tournament': gamesperdate[date]['Tournament'],
                              'FFA': gamesperdate[date]['FFA']})
+    totaltime = format(time() - starttime, '.2f')
+    print("[+] finished all games by day in %ss" % totaltime)
 
 # --------------- MAIN ---------------
 
 def main():
-
-    initialize()
-
-    olddate = datetime.fromtimestamp(getoldest(), timezone.utc)
-    print("oldest game is from %s at %s" % (gateway, olddate))
-    newdate = datetime.fromtimestamp(getnewest(), timezone.utc)
-    print("newest game is from %s at %s" % (gateway, newdate))
-    global gamecounts 
-    gamecounts = getgamecounts()
-    printgamecounts(gamecounts)
-
-    # for gametype in gametypes['tft']:
-        # print(gametype)
-        # makeviz_weekheatmap(gateway, gettftgames(gametype), gametype)
-
-    # makeviz_allgamesbydaystacked(gateway)
+    masterstart = time()
+    gateways = ['Azeroth', 'Northrend', 'Lordaeron', 'Kalimdor']
+    for gateway in gateways:
+        print("[-] starting queries for", gateway)
+        gwstart = time()
+        initialize(gateway)
+        gamecounts = getgamecounts()
+        olddate = datetime.fromtimestamp(getoldest(), timezone.utc)
+        print("oldest game is from %s at %s" % (gateway, olddate))
+        newdate = datetime.fromtimestamp(getnewest(), timezone.utc)
+        print("newest game is from %s at %s" % (gateway, newdate))
+        printgamecounts(gamecounts)
+        makeviz_allgamesbydaystacked(gamecounts, gateway)
+        makeviz_weekheatmap(gamecounts, gateway)
+        db.dispose()
+        gwtotal = format(time() - gwstart, '.2f')
+        print("[+] %s completed in %ss" % (gateway, gwtotal))
+        print("=" * 80)
     # makeviz_simplecounts(gateway)
+    mastertotal = format(time() - masterstart, '.2f')
+    print("[+] completed in %ss" % mastertotal)
+
 
 if __name__ == '__main__':
     main()

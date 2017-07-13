@@ -28,6 +28,10 @@ data presentations:
 
 * total games per day over year (stacked bar of all gametypes)
 
+* games per realm by gametype (line graph)
+
+* games per gametype by realm (line graph)
+
 * separated by gametype: total games per day (calendar heatmap)
 
 * separated by gametype: average games per hour over week (week/hour heatmap)
