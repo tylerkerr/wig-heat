@@ -240,7 +240,7 @@ def makeviz_weekheatmap(gamecounts, gateway):
     starttime = time()
     for gametype in gametypes['tft']:
         gamelist = gettftgames(gamecounts, gametype)
-        filename = 'weekheatmap-' + gateway.lower() + '-' + gametype.lower().replace(' ', '') + '.csv'
+        filename = './data/weekheatmap-' + gateway.lower() + '-' + gametype.lower().replace(' ', '') + '.csv'
         weekdays = {}
         for d in range(7):
             weekdays[d] = {}
@@ -265,7 +265,7 @@ def makeviz_weekheatmap(gamecounts, gateway):
 def makeviz_allgamesbydaystacked(gamecounts, gateway):
     print("[-] generating all games by day")
     starttime = time()
-    filename = 'allgamesbydaystacked-' + gateway.lower() + '.csv'
+    filename = './data/allgamesbydaystacked-' + gateway.lower() + '.csv'
     gamevalueinit = {'Solo': 0, 'Random 2v2': 0, 'Random 3v3': 0, 
                      'Random 4v4': 0, 'Arranged 2v2': 0,
                      'Arranged 3v3': 0, 'Arranged 4v4': 0, 
@@ -311,9 +311,9 @@ def main():
         initialize(gateway)
         gamecounts = getgamecounts()
         olddate = datetime.fromtimestamp(getoldest(), timezone.utc)
-        print("oldest game is from %s at %s" % (gateway, olddate))
+        print("oldest game from %s was at %s" % (gateway, olddate))
         newdate = datetime.fromtimestamp(getnewest(), timezone.utc)
-        print("newest game is from %s at %s" % (gateway, newdate))
+        print("newest game from %s was at %s" % (gateway, newdate))
         printgamecounts(gamecounts)
         makeviz_allgamesbydaystacked(gamecounts, gateway)
         makeviz_weekheatmap(gamecounts, gateway)
