@@ -9,7 +9,7 @@ $(function () {
     colors = ["#f7feff", "#e6fffd", "#dcffd5", "#caff76", "#fff600", "#ffd200", "#ffa200", "#ff7200", "#ff0000"], // alternatively colorbrewer.YlGnBu[9]
     days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
     times = ["1a", "2a", "3a", "4a", "5a", "6a", "7a", "8a", "9a", "10a", "11a", "12a", "1p", "2p", "3p", "4p", "5p", "6p", "7p", "8p", "9p", "10p", "11p", "12p"];
-  datasets = ["weekheatmap-northrend-solo.csv", "weekheatmap-northrend-arranged3v3.csv", "weekheatmap-northrend-arranged4v4.csv", "weekheatmap-northrend-random4v4.csv"];
+  datasets = ["data/weekheatmap-northrend-solo.csv", "data/weekheatmap-northrend-arranged3v3.csv", "data/weekheatmap-northrend-arranged4v4.csv", "data/weekheatmap-northrend-random4v4.csv"];
 
   var svg = d3.select("#chart").append("svg")
     .attr("width", width + margin.left + margin.right)

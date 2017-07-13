@@ -203,7 +203,7 @@ def getgamecounts(): # getting counts per gametype and roc/tft ratios
             rocoverlap = floor(overlapgames / (tftratio + 1))
             estimatedtftgames = tftgames + tftoverlap
             estimatedrocgames = rocgames + rocoverlap
-            tftratio = format(tftratio, '.2f')
+            tftratio = float(format(tftratio, '.2f'))
         except:
             tftratio = None
             tftgames += overlapgames
@@ -377,8 +377,8 @@ def main():
         print("newest game from %s was at %s" % (gateway, newdate))
         print("total games on %s: %s" % (gateway, 
                 run(games.select(games.c.gameid).count())[0]['tbl_row_count']))
-        # datagen_gamesbyday(gamecounts, gateway)
-        # datagen_weekheatmap(gamecounts, gateway)
+        datagen_gamesbyday(gamecounts, gateway)
+        datagen_weekheatmap(gamecounts, gateway)
         datagen_gamecounts(gamecounts, gateway)
         db.dispose()
         gwtotal = format(time() - gwstart, '.2f')
