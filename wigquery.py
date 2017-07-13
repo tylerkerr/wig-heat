@@ -308,8 +308,8 @@ def datagen_weekheatmap(gamecounts, gateway):
             gamedate = adjusttimezone(gateway, game['gamedate'])
             weekday = getweekdayfromepoch(gamedate)
             hour = gethourfromepoch(gamedate)
-            # print(game['gameid'], "orig epoch", game['gamedate'], "adj epoch", gamedate,
-                # "weekday", weekday, "hour", hour)
+            print(game['gameid'], "orig epoch", game['gamedate'], "adj epoch", gamedate,
+                "weekday", weekday, "hour", hour)
             weekdays[weekday][hour] = weekdays[weekday][hour] + 1
 
         with open(filename, 'w') as csvfile:
@@ -365,8 +365,8 @@ def datagen_gamesbyday(gamecounts, gateway):
 def main():
     mapinit()
     masterstart = time()
-    gateways = ['Azeroth', 'Northrend', 'Lordaeron', 'Kalimdor']
-    # gateways = ['Azeroth']
+    # gateways = ['Azeroth', 'Northrend', 'Lordaeron', 'Kalimdor']
+    gateways = ['Azeroth']
     datagen_prepgamecounts()
     for gateway in gateways:
         print("[-] starting queries for", gateway)
