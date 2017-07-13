@@ -77,9 +77,9 @@ def main():
 
     dbopen(dbname)
 
-    try:
+    try: # start from user-specified gameid
         startid = int(sys.argv[2])
-    except:
+    except: # or start from the highest gameid in the db
         c.execute('select gameid from wiggames order by gameid desc limit 1')
         startid = c.fetchone()[0]
 
@@ -88,7 +88,7 @@ def main():
     errors = 0
 
     while errors < consecutiveerrorlimit:
-        print(gameid, 'scraping...', end='')
+        print(gameid, gateway, 'scraping...', end='')
         scrape = downloadwig(gateway, gameid)
         if scrape['status'] == 'error':
             print(scrape['status'])
