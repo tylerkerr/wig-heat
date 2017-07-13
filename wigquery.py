@@ -116,8 +116,18 @@ def daysinyear(year): # if i must...
     else:
         return 366
 
+def isdst(epoch):
+    yearday = getyeardayfromepoch(epoch)
+    if yearday > 70 and yearday < 308:
+        return True
+    else:
+        return False
+
 def adjusttimezone(gateway, epoch):
     # times gathered using EDT
+    dstmod = 0
+    if not isdst(epoch):
+        dstmod += 3600
     if gateway == 'Azeroth': # azeroth needs -5h
         return epoch - 18000
     elif gateway == 'Lordaeron': # lordaeron needs -8h
@@ -308,8 +318,8 @@ def datagen_weekheatmap(gamecounts, gateway):
             gamedate = adjusttimezone(gateway, game['gamedate'])
             weekday = getweekdayfromepoch(gamedate)
             hour = gethourfromepoch(gamedate)
-            print(game['gameid'], "orig epoch", game['gamedate'], "adj epoch", gamedate,
-                "weekday", weekday, "hour", hour)
+            # print(game['gameid'], "orig epoch", game['gamedate'], "adj epoch", gamedate,
+            #     "weekday", weekday, "hour", hour)
             weekdays[weekday][hour] = weekdays[weekday][hour] + 1
 
         with open(filename, 'w') as csvfile:
@@ -365,8 +375,8 @@ def datagen_gamesbyday(gamecounts, gateway):
 def main():
     mapinit()
     masterstart = time()
-    # gateways = ['Azeroth', 'Northrend', 'Lordaeron', 'Kalimdor']
-    gateways = ['Azeroth']
+    gateways = ['Azeroth', 'Northrend', 'Lordaeron', 'Kalimdor']
+    # gateways = ['Azeroth']
     datagen_prepgamecounts()
     for gateway in gateways:
         print("[-] starting queries for", gateway)
