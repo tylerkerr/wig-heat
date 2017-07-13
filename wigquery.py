@@ -11,33 +11,14 @@ import random
 
 # --------------- INIT ---------------
 
-def initialize(gateway):
-    global dbname
-    global db
-    global metadata
-    global games
-    global minlength
+def mapinit():
     global gametypes
     global rocmaps
     global tftmaps
-    # try:
-    #     gateway = sys.argv[1]
-    #     assert gateway in ['Azeroth', 'Lordaeron', 'Northrend', 'Kalimdor']
-    #     assert os.path.exists(gateway + '.db')
-    # except:
-    #     print('usage:', sys.argv[0], '[gateway]')
-    #     sys.exit(1)
 
-    dbname = 'sqlite:///' + gateway + '.db'    
-    db = create_engine(dbname)
-    metadata = MetaData(db)
-    games = Table('wiggames', metadata, autoload=True)
-
-    minlength = 3
-    
     gametypes = {'tft': ['Solo', 'Random 2v2', 'Random 3v3', 'Random 4v4', 'Arranged 2v2',
                          'Arranged 3v3', 'Arranged 4v4', 'Tournament', 'FFA'], 
-                'roc': ['Solo', 'Random 2v2', 'Random 3v3', 'Arranged 2v2', 'Arranged 3v3', 'FFA']}
+                 'roc': ['Solo', 'Random 2v2', 'Random 3v3', 'Arranged 2v2', 'Arranged 3v3', 'FFA']}
 
     # maps as of June 26 2017. things will get a little messy if/when this changes
     
@@ -79,6 +60,19 @@ def initialize(gateway):
             'FFA': ['Deathrose', 'Twisted Meadows', 'Duststorm', 'Emerald Shores', 'Monsoon', 
                     'Silverpine Forest', 'Deadlock', "Mur'gul Oasis", 'Twilight Ruins', 
                     'Bloodstone Mesa', 'Copper Canyon', 'Battleground']}
+
+
+def dbinit(gateway):
+    global dbname
+    global db
+    global metadata
+    global games
+    global minlength
+    dbname = 'sqlite:///' + gateway + '.db'    
+    db = create_engine(dbname)
+    metadata = MetaData(db)
+    games = Table('wiggames', metadata, autoload=True)
+    minlength = 3
 
 # --------------- UTIL ---------------
 
@@ -174,23 +168,34 @@ def getgamecounts(): # getting counts per gametype and roc/tft ratios
     starttime = time()
     gamecounts = {}
     for gametype in gametypes['tft']:
-        allgamesq = games.select(games.c.gametype == gametype)
-        allgames = len(run(allgamesq))
-        shortgamesq = games.select((games.c.gametype == gametype) & (games.c.gamelength < minlength))
-        shortgames = len(run(shortgamesq))
+        allgamesq = games.select(games.c.gametype == gametype).count()
+        allgames = run(allgamesq)[0]['tbl_row_count']
+        shortgamesq = games.select((games.c.gametype == gametype) 
+                                & (games.c.gamelength < minlength)).count()
+        shortgames = run(shortgamesq)[0]['tbl_row_count']
+        realgamesq = games.select((games.c.gametype == gametype) 
+                                & (games.c.gamelength >= minlength)).count()
+        realgames = run(realgamesq)[0]['tbl_row_count']
         if gametype in gametypes['roc']:
-            rocq = games.select((games.c.gametype == gametype) & games.c.gamemap.notin_(tftmaps[gametype]) 
-                                & games.c.gamemap.in_(rocmaps[gametype]) & (games.c.gamelength >= minlength))
-            rocgames = len(run(rocq))
-            tftq = games.select((games.c.gametype == gametype) & games.c.gamemap.in_(tftmaps[gametype]) 
-                                & games.c.gamemap.notin_(rocmaps[gametype]) & (games.c.gamelength >= minlength))
-            tftgames = len(run(tftq))
-            overlapq = games.select((games.c.gametype == gametype) & games.c.gamemap.in_(tftmaps[gametype]) 
-                                & games.c.gamemap.in_(rocmaps[gametype]) & (games.c.gamelength >= minlength))
-            overlapgames = len(run(overlapq))
+            rocq = games.select((games.c.gametype == gametype) 
+                                & games.c.gamemap.notin_(tftmaps[gametype]) 
+                                & games.c.gamemap.in_(rocmaps[gametype]) 
+                                & (games.c.gamelength >= minlength)).count()
+            rocgames = run(rocq)[0]['tbl_row_count']
+            tftq = games.select((games.c.gametype == gametype) 
+                                & games.c.gamemap.in_(tftmaps[gametype]) 
+                                & games.c.gamemap.notin_(rocmaps[gametype]) 
+                                & (games.c.gamelength >= minlength)).count()
+            tftgames = run(tftq)[0]['tbl_row_count']
+            overlapq = games.select((games.c.gametype == gametype) 
+                                & games.c.gamemap.in_(tftmaps[gametype]) 
+                                & games.c.gamemap.in_(rocmaps[gametype]) 
+                                & (games.c.gamelength >= minlength)).count()
+            overlapgames = run(overlapq)[0]['tbl_row_count']
         else: # we don't need to do anything wild if the gametype isn't in roc, such as 4s RT or tournament
-            tftq = games.select((games.c.gametype == gametype) & (games.c.gamelength >= minlength))
-            tftgames = len(run(tftq))
+            tftq = games.select((games.c.gametype == gametype) 
+                                & (games.c.gamelength >= minlength)).count()
+            tftgames = run(tftq)[0]['tbl_row_count']
             rocgames = 0
         try: # if we have games in both roc and tft, use the ratio of games on non-overlapping maps to guess
             tftratio = tftgames / rocgames
@@ -198,6 +203,7 @@ def getgamecounts(): # getting counts per gametype and roc/tft ratios
             rocoverlap = floor(overlapgames / (tftratio + 1))
             estimatedtftgames = tftgames + tftoverlap
             estimatedrocgames = rocgames + rocoverlap
+            tftratio = format(tftratio, '.2f')
         except:
             tftratio = None
             tftgames += overlapgames
@@ -206,8 +212,10 @@ def getgamecounts(): # getting counts per gametype and roc/tft ratios
             estimatedrocgames = rocgames
 
         gamecounts[gametype] = {'allgames': allgames, 'shortgames': shortgames, 
+                                'realgames': realgames,
                                 'rocgames': rocgames, 'tftgames': tftgames, 
-                                'overlapgames': overlapgames, 'tftratio': tftratio, 
+                                'overlapgames': overlapgames, 
+                                'tftratio': tftratio, 
                                 'estimatedtftgames': estimatedtftgames, 
                                 'estimatedrocgames': estimatedrocgames}
     totaltime = format(time() - starttime, '.2f')
@@ -220,7 +228,7 @@ def printgamecounts(gamecounts):
             ratio = 'n/a'
         else:
             ratio = gamecounts[gametype]['tftratio']
-        if gametype == 'FFA' or  gametype == 'Solo': # alignment hack
+        if gametype == 'FFA' or gametype == 'Solo': # alignment hack
             temptype = gametype + '\t'
         else:
             temptype = gametype
@@ -230,12 +238,62 @@ def printgamecounts(gamecounts):
 
 # --------------- DATA OUTPUT FUNCTIONS ---------------
 
-def makeviz_simplecounts(gateway):
-    for gametype in gametypes['tft']:
-        print(gametype, gamecounts[gametype]['allgames'])
+def datagen_prepgamecounts():
+    filename = './data/gamecounts.csv'
+    with open(filename, 'w') as csvfile:
+        fieldnames = ['gateway', 'gametype', 'allgames', 'shortgames', 'realgames', 'realratio',
+                      'rocgames', 'tftgames', 'overlapgames', 'tftratio', 
+                      'estimatedtftgames', 'estimatedrocgames']
+        writer = DictWriter(csvfile, fieldnames=fieldnames)
+        writer.writeheader()
 
+def datagen_gamecounts(gamecounts, gateway):
+    filename = './data/gamecounts.csv'
+    fieldnames = ['gateway', 'gametype', 'allgames', 'shortgames', 'realgames', 'realratio',
+              'rocgames', 'tftgames', 'overlapgames', 'tftratio', 
+              'estimatedtftgames', 'estimatedrocgames']
+    totals = {}
+    for field in fieldnames[2:]:
+        totals[field] = 0
+    
+    with open(filename, 'a') as csvfile:
+        writer = DictWriter(csvfile, fieldnames=fieldnames)
+        for gametype in gametypes['tft']:
+            try:
+                realratio = format(gamecounts[gametype]['realgames'] / gamecounts[gametype]['shortgames'], '.2f')
+            except:
+                realratio = None
+            writer.writerow({'gateway': gateway, 'gametype': gametype,
+                            'allgames': gamecounts[gametype]['allgames'], 
+                            'realgames': gamecounts[gametype]['realgames'], 
+                            'shortgames': gamecounts[gametype]['shortgames'], 
+                            'realratio': realratio,
+                            'tftgames': gamecounts[gametype]['tftgames'], 
+                            'rocgames': gamecounts[gametype]['rocgames'], 
+                            'overlapgames': gamecounts[gametype]['overlapgames'], 
+                            'tftratio': gamecounts[gametype]['tftratio'], 
+                            'estimatedtftgames': gamecounts[gametype]['estimatedtftgames'], 
+                            'estimatedrocgames': gamecounts[gametype]['estimatedrocgames']})
+            for field in fieldnames[2:]:
+                try:
+                    totals[field] += gamecounts[gametype][field]
+                except:
+                    totals[field] = None
+        totals['tftratio'] = format(totals['tftgames'] / totals['rocgames'], '.2f')
+        totals['realratio'] = format(totals['realgames'] / totals['shortgames'], '.2f')
+        writer.writerow({'gateway': gateway, 'gametype': 'Total',
+                        'allgames': totals['allgames'], 
+                        'realgames': totals['realgames'], 
+                        'shortgames': totals['shortgames'], 
+                        'realratio': totals['realratio'],
+                        'tftgames': totals['tftgames'], 
+                        'rocgames': totals['rocgames'], 
+                        'overlapgames': totals['overlapgames'], 
+                        'tftratio': totals['tftratio'], 
+                        'estimatedtftgames': totals['estimatedtftgames'], 
+                        'estimatedrocgames': totals['estimatedrocgames']})
 
-def makeviz_weekheatmap(gamecounts, gateway):
+def datagen_weekheatmap(gamecounts, gateway):
     print("[-] generating week heatmap")
     starttime = time()
     for gametype in gametypes['tft']:
@@ -262,10 +320,10 @@ def makeviz_weekheatmap(gamecounts, gateway):
     totaltime = format(time() - starttime, '.2f')
     print("[+] finished week heatmap in %ss" % totaltime)
 
-def makeviz_allgamesbydaystacked(gamecounts, gateway):
+def datagen_gamesbyday(gamecounts, gateway):
     print("[-] generating all games by day")
     starttime = time()
-    filename = './data/allgamesbydaystacked-' + gateway.lower() + '.csv'
+    filename = './data/gamesbyday-' + gateway.lower() + '.csv'
     gamevalueinit = {'Solo': 0, 'Random 2v2': 0, 'Random 3v3': 0, 
                      'Random 4v4': 0, 'Arranged 2v2': 0,
                      'Arranged 3v3': 0, 'Arranged 4v4': 0, 
@@ -303,25 +361,29 @@ def makeviz_allgamesbydaystacked(gamecounts, gateway):
 # --------------- MAIN ---------------
 
 def main():
+    mapinit()
     masterstart = time()
     gateways = ['Azeroth', 'Northrend', 'Lordaeron', 'Kalimdor']
+    # gateways = ['Azeroth']
+    datagen_prepgamecounts()
     for gateway in gateways:
         print("[-] starting queries for", gateway)
         gwstart = time()
-        initialize(gateway)
+        dbinit(gateway)
         gamecounts = getgamecounts()
         olddate = datetime.fromtimestamp(getoldest(), timezone.utc)
         print("oldest game from %s was at %s" % (gateway, olddate))
         newdate = datetime.fromtimestamp(getnewest(), timezone.utc)
         print("newest game from %s was at %s" % (gateway, newdate))
-        printgamecounts(gamecounts)
-        makeviz_allgamesbydaystacked(gamecounts, gateway)
-        makeviz_weekheatmap(gamecounts, gateway)
+        print("total games on %s: %s" % (gateway, 
+                run(games.select(games.c.gameid).count())[0]['tbl_row_count']))
+        # datagen_gamesbyday(gamecounts, gateway)
+        # datagen_weekheatmap(gamecounts, gateway)
+        datagen_gamecounts(gamecounts, gateway)
         db.dispose()
         gwtotal = format(time() - gwstart, '.2f')
         print("[+] %s completed in %ss" % (gateway, gwtotal))
         print("=" * 80)
-    # makeviz_simplecounts(gateway)
     mastertotal = format(time() - masterstart, '.2f')
     print("[+] completed in %ss" % mastertotal)
 
