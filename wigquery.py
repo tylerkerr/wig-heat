@@ -2,6 +2,7 @@
 
 import sys
 import os
+from collections import OrderedDict
 from sqlalchemy import *
 from datetime import datetime, timezone
 from time import strftime, gmtime, time
@@ -321,7 +322,6 @@ def datagen_weekheatmap(gamecounts, gateway):
             # print(game['gameid'], "orig epoch", game['gamedate'], "adj epoch", gamedate,
             #     "weekday", weekday, "hour", hour)
             weekdays[weekday][hour] = weekdays[weekday][hour] + 1
-
         with open(filename, 'w') as csvfile:
             fieldnames = ['weekday', 'hour', 'games']
             writer = DictWriter(csvfile, fieldnames=fieldnames)
@@ -350,14 +350,13 @@ def datagen_gamesbyday(gamecounts, gateway):
             if not gamedate in gamesperdate:
                 gamesperdate[gamedate] = gamevalueinit.copy()
             gamesperdate[gamedate][gametype] += 1
-
     with open(filename, 'w') as csvfile:
         fieldnames = ['date']
         for gametype in gametypes['tft']:
             fieldnames.append(gametype)
         writer = DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
-        for date in gamesperdate:
+        for date in OrderedDict(sorted(gamesperdate.items())):
             writer.writerow({'date': date, 'Solo': gamesperdate[date]['Solo'], 
                              'Random 2v2': gamesperdate[date]['Random 2v2'],
                              'Random 3v3': gamesperdate[date]['Random 3v3'],

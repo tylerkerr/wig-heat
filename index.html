@@ -1,0 +1,96 @@
+<html>
+<meta http-equiv="content-type" content="text/html; charset=UTF8">
+<head>
+<script src = "./d3.v3.js"></script>
+<script src = "http://cdnjs.cloudflare.com/ajax/libs/nvd3/1.1.15-beta/nv.d3.js"></script>
+<link rel = "stylesheet" href = "http://cdnjs.cloudflare.com/ajax/libs/nvd3/1.1.15-beta/nv.d3.css">
+</head>
+
+<div id="container">
+  <div id="tabs">
+    <div class="tab" id="tab-northrend">
+      Northrend
+    </div>
+    <div class="tab" id="tab-azeroth">
+      Azeroth
+    </div>
+    <div class="tab" id="tab-lordaeron">
+      Lordaeron
+    </div>
+    <div class="tab" id="tab-kalimdor">
+      Kalimdor
+    </div>
+  </div>
+  <div id="charts">
+    <div id="chart-northrend">
+      <svg></svg>
+    </div>
+    <div id="chart-azeroth" style="visibility:hidden">
+      <svg></svg>
+    </div>
+    <div id="chart-lordaeron" style="visibility:hidden">
+      <svg></svg>
+    </div>
+    <div id="chart-kalimdor" style="visibility:hidden">
+      <svg></svg>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+
+var gateways = ["azeroth", "northrend", "lordaeron", "kalimdor"]
+gateways.forEach(function(gateway){
+  var tab = document.querySelector('#tab-' + gateway)
+  var chart = document.querySelector('#chart-' + gateway)
+  tab.onclick = function(){
+    chart.style.display = 'block'
+    gateways.forEach(function(g){
+      if (g != gateway){
+        var chartToHide = document.querySelector('#chart-' + g)
+        chartToHide.style.display = 'none'
+      }
+    })
+  }
+})
+
+gateways.forEach(function(gateway){
+  d3.csv("data/gamesbyday-" + gateway + ".csv",function(err,data){
+      var dataToPlot = Object.keys(data[0]).filter(function(k){return k!="date"})
+        .map(function(k){
+          return {"key":k,"values":data.map(function(d){  
+           return {
+             "x":d3.time.format("%Y-%m-%d").parse(d.date),
+             "y":+d[k]
+           }
+          })}
+        })
+        
+      nv.addGraph(function() {
+        var chart = nv.models.lineWithFocusChart();
+    
+        chart.xAxis
+            .tickFormat(function(d) { return d3.time.format('%x')(new Date(d)) });
+        chart.x2Axis
+            .tickFormat(function(d) { return ''});
+    
+        chart.yAxis
+            .tickFormat();
+        chart.y2Axis
+          .tickFormat(function(d) { return ''});
+    
+        d3.select('#chart-' + gateway + ' svg')
+            .datum(dataToPlot)
+            .transition().duration(500)
+            .call(chart);
+    
+        nv.utils.windowResize(chart.update);
+    
+        return chart;
+      });
+    
+    })  
+});  
+</script>
+
+</html>
