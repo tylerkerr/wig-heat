@@ -45,6 +45,7 @@ gateways.forEach(function(gateway){
   var chart = document.querySelector('#chart-' + gateway)
   tab.onclick = function(){
     chart.style.display = 'block'
+    chart.style.visibility = 'visible'
     gateways.forEach(function(g){
       if (g != gateway){
         var chartToHide = document.querySelector('#chart-' + g)
