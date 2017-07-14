@@ -12,10 +12,13 @@ import random
 
 # --------------- INIT ---------------
 
-def mapinit():
+def mapinit(): # hardcoded arrays of game-specific variables
     global gametypes
     global rocmaps
     global tftmaps
+    global gateways
+
+    gateways = ['Northrend', 'Azeroth', 'Lordaeron', 'Kalimdor']
 
     gametypes = {'tft': ['Solo', 'Random 2v2', 'Random 3v3', 'Random 4v4', 'Arranged 2v2',
                          'Arranged 3v3', 'Arranged 4v4', 'Tournament', 'FFA'], 
@@ -130,13 +133,13 @@ def adjusttimezone(gateway, epoch):
     if not isdst(epoch):
         dstmod += 3600
     if gateway == 'Azeroth': # azeroth needs -5h
-        return epoch - 18000
+        return epoch - 18000 + dstmod
     elif gateway == 'Lordaeron': # lordaeron needs -8h
-        return epoch - 28800
+        return epoch - 28800 + dstmod
     elif gateway == 'Northrend': # northrend needs +1h
-        return epoch + 3600
+        return epoch + 3600 + dstmod
     elif gateway == 'Kalimdor': # kalimdor needs +8h
-        return epoch + 28800
+        return epoch + 28800 + dstmod
 
 
 # --------------- ROC/TFT DIFFERENTIATION ---------------
@@ -249,6 +252,34 @@ def printgamecounts(gamecounts):
 
 # --------------- DATA OUTPUT FUNCTIONS ---------------
 
+def datagen_preptimestamps():
+    filename='./data/timestamps.csv'
+    fieldnames = ['gateway', 'totalgames', 'oldestgamedate', 'oldestgameid', 
+                  'newestgamedate', 'newestgameid', 'datemodified']
+    with open(filename, 'w') as csvfile:
+        writer = DictWriter(csvfile, fieldnames=fieldnames)
+        writer.writeheader()
+
+def datagen_timestamps(gateway):
+    filename='./data/timestamps.csv'
+    fieldnames = ['gateway', 'totalgames', 'oldestgamedate', 'oldestgameid', 
+                  'newestgamedate', 'newestgameid', 'datemodified']
+    totalgames = int(run(games.select(games.c.gameid).count())[0]['tbl_row_count'])
+    oldestgamedate = str(datetime.fromtimestamp(getoldest(), timezone.utc))[:-6]
+    oldestgameid = int(run(games.select().order_by(games.c.gamedate.desc()).limit(1))[0]['gameid'])
+    newestgamedate = str(datetime.fromtimestamp(getnewest(), timezone.utc))[:-6]
+    newestgameid = int(run(games.select().order_by(games.c.gamedate.asc()).limit(1))[0]['gameid'])
+    datemodified = strftime('%c', gmtime(int(os.path.getmtime(gateway + '.db'))))
+    with open(filename, 'a') as csvfile:
+        writer = DictWriter(csvfile, fieldnames=fieldnames)
+        writer.writerow({'gateway': gateway,
+                         'totalgames': totalgames,
+                         'oldestgamedate': oldestgamedate,
+                         'oldestgameid': oldestgameid,
+                         'newestgamedate': newestgamedate,
+                         'newestgameid': newestgameid,
+                         'datemodified': datemodified})
+
 def datagen_prepgamecounts():
     filename = './data/gamecounts.csv'
     with open(filename, 'w') as csvfile:
@@ -266,12 +297,12 @@ def datagen_gamecounts(gamecounts, gateway):
     totals = {}
     for field in fieldnames[2:]:
         totals[field] = 0
-    
     with open(filename, 'a') as csvfile:
         writer = DictWriter(csvfile, fieldnames=fieldnames)
         for gametype in gametypes['tft']:
             try:
-                realratio = format(gamecounts[gametype]['realgames'] / gamecounts[gametype]['shortgames'], '.2f')
+                realratio = format((gamecounts[gametype]['realgames'] / 
+                                      gamecounts[gametype]['shortgames']), '.2f')
             except:
                 realratio = None
             writer.writerow({'gateway': gateway, 'gametype': gametype,
@@ -291,7 +322,7 @@ def datagen_gamecounts(gamecounts, gateway):
                 except:
                     totals[field] = None
         totals['tftratio'] = format(totals['tftgames'] / totals['rocgames'], '.2f')
-        totals['realratio'] = format(totals['realgames'] / totals['shortgames'], '.2f')
+        totals['realratio'] = format((totals['realgames'] / totals['shortgames']), '.2f')
         writer.writerow({'gateway': gateway, 'gametype': 'Total',
                         'allgames': totals['allgames'], 
                         'realgames': totals['realgames'], 
@@ -304,38 +335,60 @@ def datagen_gamecounts(gamecounts, gateway):
                         'estimatedtftgames': totals['estimatedtftgames'], 
                         'estimatedrocgames': totals['estimatedrocgames']})
 
-def datagen_weekheatmap(gamecounts, gateway):
-    print("[-] generating week heatmap")
-    starttime = time()
-    for gametype in gametypes['tft']:
-        gamelist = gettftgames(gamecounts, gametype)
-        filename = './data/weekheatmap-' + gateway.lower() + '-' + gametype.lower().replace(' ', '') + '.csv'
-        weekdays = {}
-        for d in range(7):
-            weekdays[d] = {}
-            for h in range(24):
-                weekdays[d][h] = 0
-        for game in gamelist:
-            gamedate = adjusttimezone(gateway, game['gamedate'])
-            weekday = getweekdayfromepoch(gamedate)
-            hour = gethourfromepoch(gamedate)
-            # print(game['gameid'], "orig epoch", game['gamedate'], "adj epoch", gamedate,
-            #     "weekday", weekday, "hour", hour)
-            weekdays[weekday][hour] = weekdays[weekday][hour] + 1
-        with open(filename, 'w') as csvfile:
-            fieldnames = ['weekday', 'hour', 'games']
-            writer = DictWriter(csvfile, fieldnames=fieldnames)
-            writer.writeheader()
-            for day in weekdays:
-                for hour in weekdays[day]:
-                    writer.writerow({'weekday': day, 'hour': hour, 'games': weekdays[day][hour]})
-    totaltime = format(time() - starttime, '.2f')
-    print("[+] finished week heatmap in %ss" % totaltime)
+def datagen_prepallrealmsperday():
+    filename = './data/gamesbytype-allrealms.csv'
+    fieldnames = ['date', 'Northrend', 'Azeroth', 'Lordaeron', 'Kalimdor']
+    with open(filename, 'w') as csvfile:
+        writer = DictWriter(csvfile, fieldnames=fieldnames)
+        writer.writeheader()
 
-def datagen_gamesbyday(gamecounts, gateway):
-    print("[-] generating all games by day")
+def datagen_allrealmsperday(gamecounts, gateway):
+    print("[-] generating total games per day")
     starttime = time()
-    filename = './data/gamesbyday-' + gateway.lower() + '.csv'
+    startdate = getdatefromepoch(getoldest())
+    enddate = getdatefromepoch(getnewest())
+    allgamedates = run(select([games.c.gamedate]))
+    gamesperdate = {}
+    for game in allgamedates:
+        gamedate = getdatefromepoch(adjusttimezone(gateway, game['gamedate']))
+        if not gamedate in gamesperdate:
+            gamesperdate[gamedate] = 0
+        gamesperdate[gamedate] += 1
+    totaltime = format(time() - starttime, '.2f')
+    print("[+] finished total games per day in %ss" % totaltime)
+    return dict(OrderedDict(sorted(gamesperdate.items())))
+
+def datagen_finalizeallrealmsperday(totalsperday):
+    filename = './data/gamesbytype-allrealms.csv'
+    fieldnames = ['date'] + gateways
+    totals = {}
+    for gateway in totalsperday:
+        for day in totalsperday[gateway]:
+            if not day in totals:
+                totals[day] = {}
+            if not gateway in totals[day]:
+                totals[day][gateway] = 0
+            totals[day][gateway] = totalsperday[gateway][day]
+
+    for day in totals: # in the event that a day doesn't have data from all gateways
+        if len(totals[day]) < len(gateways): 
+            for gateway in gateways:
+                if gateway not in totals[day]:
+                    totals[day][gateway] = 0
+
+    with open(filename, 'a') as csvfile:
+        writer = DictWriter(csvfile, fieldnames=fieldnames)
+        for day in totals:
+            writer.writerow({'date': day, 
+                             'Northrend': totals[day]['Northrend'],
+                             'Azeroth': totals[day]['Azeroth'],
+                             'Lordaeron': totals[day]['Lordaeron'],
+                             'Kalimdor': totals[day]['Kalimdor']})
+
+def datagen_gamesbytype(gamecounts, gateway):
+    print("[-] generating games by type per day")
+    starttime = time()
+    filename = './data/gamesbytype-' + gateway.lower() + '.csv'
     gamevalueinit = {'Solo': 0, 'Random 2v2': 0, 'Random 3v3': 0, 
                      'Random 4v4': 0, 'Arranged 2v2': 0,
                      'Arranged 3v3': 0, 'Arranged 4v4': 0, 
@@ -367,16 +420,46 @@ def datagen_gamesbyday(gamecounts, gateway):
                              'Tournament': gamesperdate[date]['Tournament'],
                              'FFA': gamesperdate[date]['FFA']})
     totaltime = format(time() - starttime, '.2f')
-    print("[+] finished all games by day in %ss" % totaltime)
+    print("[+] finished games by type day in %ss" % totaltime)
+
+def datagen_weekheatmap(gamecounts, gateway):
+    print("[-] generating week heatmap")
+    starttime = time()
+    for gametype in gametypes['tft']:
+        gamelist = gettftgames(gamecounts, gametype)
+        filename = './data/weekheatmap-' + gateway.lower() + '-' + gametype.lower().replace(' ', '') + '.csv'
+        weekdays = {}
+        for d in range(7):
+            weekdays[d] = {}
+            for h in range(24):
+                weekdays[d][h] = 0
+        for game in gamelist:
+            gamedate = adjusttimezone(gateway, game['gamedate'])
+            weekday = getweekdayfromepoch(gamedate)
+            hour = gethourfromepoch(gamedate)
+            # print(game['gameid'], "orig epoch", game['gamedate'], "adj epoch", gamedate,
+            #     "weekday", weekday, "hour", hour)
+            weekdays[weekday][hour] = weekdays[weekday][hour] + 1
+        with open(filename, 'w') as csvfile:
+            fieldnames = ['weekday', 'hour', 'games']
+            writer = DictWriter(csvfile, fieldnames=fieldnames)
+            writer.writeheader()
+            for day in weekdays:
+                for hour in weekdays[day]:
+                    writer.writerow({'weekday': day, 'hour': hour, 'games': weekdays[day][hour]})
+    totaltime = format(time() - starttime, '.2f')
+    print("[+] finished week heatmap in %ss" % totaltime)
 
 # --------------- MAIN ---------------
 
 def main():
-    mapinit()
     masterstart = time()
-    gateways = ['Azeroth', 'Northrend', 'Lordaeron', 'Kalimdor']
-    # gateways = ['Azeroth']
+    mapinit()
+    # gateways = ['Azeroth', 'Kalimdor']
     datagen_prepgamecounts()
+    datagen_preptimestamps()
+    datagen_prepallrealmsperday()
+    totalsperday = {}
     for gateway in gateways:
         print("[-] starting queries for", gateway)
         gwstart = time()
@@ -388,13 +471,16 @@ def main():
         print("newest game from %s was at %s" % (gateway, newdate))
         print("total games on %s: %s" % (gateway, 
                 run(games.select(games.c.gameid).count())[0]['tbl_row_count']))
-        datagen_gamesbyday(gamecounts, gateway)
+        datagen_gamesbytype(gamecounts, gateway)
         datagen_weekheatmap(gamecounts, gateway)
         datagen_gamecounts(gamecounts, gateway)
+        datagen_timestamps(gateway)
+        totalsperday[gateway] = datagen_allrealmsperday(gamecounts, gateway)
         db.dispose()
         gwtotal = format(time() - gwstart, '.2f')
         print("[+] %s completed in %ss" % (gateway, gwtotal))
         print("=" * 80)
+    datagen_finalizeallrealmsperday(totalsperday)
     mastertotal = format(time() - masterstart, '.2f')
     print("[+] completed in %ss" % mastertotal)
 

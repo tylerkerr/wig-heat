@@ -4,10 +4,22 @@
 <script src = "./d3.v3.js"></script>
 <script src = "./nv.d3.js"></script>
 <link rel = "stylesheet" href = "./nv.d3.css">
+<style>
+html, body{
+    height: 100%;
+}
+.container div{
+    height:50vh; 
+    width:50%;
+}
+</style>
 </head>
 
 <div id="container">
   <div id="tabs">
+    <div class="tab" id="tab-allrealms">
+      All Gateways
+    </div>
     <div class="tab" id="tab-northrend">
       Northrend
     </div>
@@ -22,7 +34,10 @@
     </div>
   </div>
   <div id="charts">
-    <div id="chart-northrend">
+    <div id="chart-allrealms" style="visibility:visible">
+      <svg></svg>
+    </div>
+    <div id="chart-northrend" style="visibility:hidden">
       <svg></svg>
     </div>
     <div id="chart-azeroth" style="visibility:hidden">
@@ -39,7 +54,7 @@
 
 <script type="text/javascript">
 
-var gateways = ["azeroth", "northrend", "lordaeron", "kalimdor"]
+var gateways = ["allrealms", "azeroth", "northrend", "lordaeron", "kalimdor"]
 gateways.forEach(function(gateway){
   var tab = document.querySelector('#tab-' + gateway)
   var chart = document.querySelector('#chart-' + gateway)
@@ -56,7 +71,7 @@ gateways.forEach(function(gateway){
 })
 
 gateways.forEach(function(gateway){
-  d3.csv("data/gamesbyday-" + gateway + ".csv",function(err,data){
+  d3.csv("data/gamesbytype-" + gateway + ".csv",function(err,data){
       var dataToPlot = Object.keys(data[0]).filter(function(k){return k!="date"})
         .map(function(k){
           return {"key":k,"values":data.map(function(d){  
