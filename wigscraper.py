@@ -96,7 +96,7 @@ def main():
             errors += 1
         elif scrape['status'] == 'saved':
             try:
-                print('saved', end='')
+                print('saved ', end='')
                 gamerow = parsegame(gameid, scrape['html'])
                 date = datetime.datetime.fromtimestamp(gamerow[1], datetime.timezone.utc)
                 writegametodb(gamerow)
