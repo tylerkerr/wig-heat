@@ -2,6 +2,7 @@
 
 import sys
 import os
+from time import sleep
 from requests import get
 from bs4 import BeautifulSoup
 from dateutil.parser import parse
@@ -94,11 +95,17 @@ def main():
             print(scrape['status'])
             errors += 1
         elif scrape['status'] == 'saved':
-            gamerow = parsegame(gameid, scrape['html'])
-            date = datetime.datetime.fromtimestamp(gamerow[1], datetime.timezone.utc)
-            writegametodb(gamerow)
-            print('saved', date, gamerow[2])
-            errors = 0 # reset error count after successful scrape
+            try:
+                print('saved', end='')
+                gamerow = parsegame(gameid, scrape['html'])
+                date = datetime.datetime.fromtimestamp(gamerow[1], datetime.timezone.utc)
+                writegametodb(gamerow)
+                print(date, gamerow[2])
+                errors = 0 # reset error count after successful scrape
+            except:
+                gameid -= 1
+                errors += 1
+                sleep(10)
         elif scrape['status'] == 'exists':
             print(scrape['status'])
         gameid += 1
