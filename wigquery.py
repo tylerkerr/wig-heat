@@ -259,10 +259,10 @@ def datagen_timestamps(gateway): # basic current status of the databases.
     fieldnames = ['gateway', 'totalgames', 'oldestgamedate', 'oldestgameid', 
                   'newestgamedate', 'newestgameid', 'datemodified']
     totalgames = int(run(games.select(games.c.gameid).count())[0]['tbl_row_count'])
-    oldestgamedate = str(datetime.fromtimestamp(getoldest(), timezone.utc))[:-6]
-    oldestgameid = int(run(games.select().order_by(games.c.gamedate.desc()).limit(1))[0]['gameid'])
-    newestgamedate = str(datetime.fromtimestamp(getnewest(), timezone.utc))[:-6]
-    newestgameid = int(run(games.select().order_by(games.c.gamedate.asc()).limit(1))[0]['gameid'])
+    oldestgamedate = str(datetime.fromtimestamp(adjusttimezone(gateway, getoldest()), timezone.utc))[:-6]
+    oldestgameid = int(run(games.select().order_by(games.c.gamedate.asc()).limit(1))[0]['gameid'])
+    newestgamedate = str(datetime.fromtimestamp(adjusttimezone(gateway, getnewest()), timezone.utc))[:-6]
+    newestgameid = int(run(games.select().order_by(games.c.gamedate.desc()).limit(1))[0]['gameid'])
     datemodified = strftime('%c', gmtime(int(os.path.getmtime(gateway + '.db'))))
     with open(filename, 'a') as csvfile:
         writer = DictWriter(csvfile, fieldnames=fieldnames)

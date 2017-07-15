@@ -3,16 +3,41 @@
 <html>
 
 <head>
-  <link rel="stylesheet" type="text/css" href="./css/skeleton.min.css">
-  </style>
+  <!-- <link rel="stylesheet" type="text/css" href="./css/skeleton.min.css"> -->
   <link rel="stylesheet" type="text/css" href="./css/weekheatmap.css">
-  </style>
+  <link rel = "stylesheet" href = "./css/wig-heat.css">
   <script src="./js/d3.min.js"></script>
   <script src="./js/jquery-3.2.1.min.js"></script>
   <script src="./js/weekheatmap.js"></script>
 </head>
 
 <body>
+  <div id="tabs">
+    <div class="tab" id="tab-allrealms">
+      <a href="./#allrealms">All Realms</a>
+    </div>
+    <div class="tab" id="tab-northrend">
+      <a href="./#northrend">Northrend</a>
+    </div>
+    <div class="tab" id="tab-azeroth">
+      <a href="./#azeroth">Azeroth</a>
+    </div>
+    <div class="tab" id="tab-lordaeron">
+      <a href="./#lordaeron">Lordaeron</a>
+    </div>
+    <div class="tab" id="tab-kalimdor">
+      <a href="./#kalimdor">Kalimdor</a>
+    </div>
+    <div class="tab active" id="tab-">
+      <a href="/heatmaps.html">Heatmaps</a>
+    </div>
+    <div class="tab" id="tab-">
+      <a href="/stats.html">Statistics</a>
+    </div>
+    <div class="tab" id="tab-">
+      <a href="/about.html">About</a>
+    </div>
+  </div>
   <div class="container">
     <div id="chart"></div>
     <div id="dataset-picker"></div>

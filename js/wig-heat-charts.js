@@ -17,6 +17,8 @@ var processedGatewayData = {}
 var loadedDataCount = 0;
 var chart, chartData; 
 
+document.getElementById("tab-" + selectedGateway).className += " active"
+
 gateways.forEach(function(gateway){
   var tab = document.querySelector('#tab-' + gateway)
   var chart = document.querySelector('#chart-' + gateway)
@@ -44,13 +46,16 @@ gateways.forEach(function(gateway){
 })
 
 function update(gateway) {
+    document.getElementById("tab-" + selectedGateway).classList.remove("active")
+    selectedGateway = gateway
+    document.getElementById("tab-" + selectedGateway).className += " active"
     var data = processedGatewayData[gateway]
     chartData.datum(data).transition().duration(500).call(chart);
     nv.utils.windowResize(chart.update);
 };
 
 var tryCreateChart = setInterval(function(){
-  console.log("a trial");
+
 if (loadedDataCount == gateways.length) {
   nv.addGraph(function() {
     chart = nv.models.lineWithFocusChart();

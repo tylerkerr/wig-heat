@@ -3,40 +3,40 @@ var stepSize = 240;
 var stepTime = 500;
 
 function assignButtons () {
-  $('.statdiv .stats_UI_scrollRight').click(function () {
+  $('.stampdiv .timestamps_UI_scrollRight').click(function () {
     var scrollTo;
-    if ($('.statdiv .stats_import_wrap').scrollLeft() + stepSize > $('.statdiv .stats_import_wrap').width()) {
-      scrollTo = $('.statdiv .stats_import_wrap').width() + 'px';
+    if ($('.stampdiv .timestamps_import_wrap').scrollLeft() + stepSize > $('.stampdiv .timestamps_import_wrap').width()) {
+      scrollTo = $('.stampdiv .timestamps_import_wrap').width() + 'px';
     } else {
-      scrollTo = $('.statdiv .stats_import_wrap').scrollLeft() + stepSize + 'px';
+      scrollTo = $('.stampdiv .timestamps_import_wrap').scrollLeft() + stepSize + 'px';
     }
-    $('.statdiv .stats_import_wrap').animate({scrollLeft: scrollTo},
+    $('.stampdiv .timestamps_import_wrap').animate({scrollLeft: scrollTo},
     stepTime, function () {
       
     });
   });
-  $('.statdiv .stats_UI_scrollLeft').click(function () {
+  $('.stampdiv .timestamps_UI_scrollLeft').click(function () {
     var scrollTo;
-    if ($('.statdiv .stats_import_wrap').scrollLeft() - stepSize < 0) {
+    if ($('.stampdiv .timestamps_import_wrap').scrollLeft() - stepSize < 0) {
       scrollTo = '0px';
     } else {
-      scrollTo = $('.statdiv .stats_import_wrap').scrollLeft() - stepSize + 'px';
+      scrollTo = $('.stampdiv .timestamps_import_wrap').scrollLeft() - stepSize + 'px';
     }
-    $('.statdiv .stats_import_wrap').animate({scrollLeft: scrollTo}, stepTime, function () {
+    $('.stampdiv .timestamps_import_wrap').animate({scrollLeft: scrollTo}, stepTime, function () {
       
     });
   });
 } 
 
-$('.statdiv.stats_import_wrap').on('scroll', function () {checkButtonNecessity();});
+$('.stampdiv.timestamps_import_wrap').on('scroll', function () {checkButtonNecessity();});
 
 $(document).ready(function() {
 
-  var csvfile_import = "./data/gamecounts.csv".replace(/\&amp\;/g, '&');
+  var csvfile_import = "./data/timestamps.csv".replace(/\&amp\;/g, '&');
   
-  $('.statdiv .stats_import_wrap').CSVToTable( csvfile_import , { loadingText: 'Generating Table', loadingImage: 'https://campus.mst.edu/emctest/t4_template/content_types/search_sort_table/images/loading.gif', startLine: 0, tableClass: "stats_import", theadClass: "heading" }).bind("loadComplete",function() { 
-    $('.statdiv .stats_import_wrap').find('TABLE').tablesorter({ widgets: ["zebra"] });      
-    $('.statdiv .stats_import').filterTable({inputSelector:".statdiv .stats_search"});
+  $('.stampdiv .timestamps_import_wrap').CSVToTable( csvfile_import , { loadingText: 'Generating Table', loadingImage: 'https://campus.mst.edu/emctest/t4_template/content_types/search_sort_table/images/loading.gif', startLine: 0, tableClass: "timestamps_import", theadClass: "heading" }).bind("loadComplete",function() { 
+    $('.stampdiv .timestamps_import_wrap').find('TABLE').tablesorter({ widgets: ["zebra"] });      
+    $('.stampdiv .timestamps_import').filterTable({inputSelector:".stampdiv .timestamps_search"});
     assignButtons();
     
   }); 

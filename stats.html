@@ -2,9 +2,12 @@
 <head>
 <meta http-equiv="content-type" content="text/html; charset=UTF8">
 <link rel = "stylesheet" href = "./css/stats.css">
+<link rel = "stylesheet" href = "./css/timestamps.css">
 <link rel = "stylesheet" href = "./css/wig-heat.css">
 <script src=./js/jquery-3.2.1.min.js></script>
 <script src=./js/stats.js></script>
+<script src=./js/timestamps.js></script>
+<title>wigheat - nothin but guts</title>
 </head>
 
 <body>
@@ -34,9 +37,9 @@
       <a href="/about.html">About</a>
     </div>
   </div>
-<div class="wow fadeInUp stats_holder 122860">
+<div class="stats_holder statdiv">
   <div class="stats_heading">
-    <div class="stats_title">nothin but guts</div>
+    <div class="stats_title">game data by realm</div>
     <input class="stats_search" type="text" width="200" placeholder="search...">
   </div>
   <div class="stats">
@@ -46,33 +49,48 @@
     <div class="stats_UI_scrollRight stats_UI_button" style="display: none;"></div>
   </div>
 </div>
+<div class="timestamps_holder stampdiv">
+  <div class="timestamps_heading">
+    <div class="timestamps_title">database status</div>
+    <!-- <input class="timestamps_search" type="text" width="200" placeholder="search..."> -->
+  </div>
+  <div class="timestamps">
+    <div class="timestamps_import_wrap" style="display: block;">
+    </div>
+    <div class="timestamps_UI_scrollLeft stats_UI_button" style="display: none;"></div>
+    <div class="timestamps_UI_scrollRight stats_UI_button" style="display: none;"></div>
+  </div>
+</div>
 <div class="statslegend">
-  <div class="statslegendline">
-    <img src="./img/archmage.gif" width=15 height=15> <i>shortgames</i>: games 2 minutes or shorter. discarded in most charts as we don't care too much about lossbots.
+  <div class="statslegendline" align=center>
+    <b><i>legend:</i></b>
   </div>
   <div class="statslegendline">
-    <img src="./img/bloodmage.gif" width=15 height=15> <i>realgames</i>: games 3 minutes or longer.
+    <img src="./img/archmage.gif" width=15 height=15 alt="nerd"> <i>shortgames</i>: games 2 minutes or shorter. discarded in most charts as we don't care too much about lossbots.
   </div>
   <div class="statslegendline">
-    <img src="./img/keeperofthegrove.gif" width=15 height=15> <i>realratio</i>: ratio of the above two variables. higher means more real games, lower than 1 means more shortgames than realgames. e.g. 0.24 means only 24% of games in that realm/type were longer than 3 minutes.
+    <img src="./img/bloodmage.gif" width=15 height=15 alt="nerd"> <i>realgames</i>: games 3 minutes or longer.
   </div>
   <div class="statslegendline">
-    <img src="./img/farseer.gif" width=15 height=15> <i>rocgames</i>: games played on maps that only exist in the <a href="https://github.com/tylerkerr/wig-heat/blob/defb8bfc2a9cde3cbc6ebb7a7a32e4e34e2b85dc/wigquery.py#L29-L40">Reign of Chaos mappool</a> for each game's gametype.
+    <img src="./img/keeperofthegrove.gif" width=15 height=15 alt="nerd"> <i>realratio</i>: ratio of the above two variables. higher means more real games, lower than 1 means more shortgames than realgames. e.g. 0.24 means only 24% of games in that realm/type were longer than 3 minutes.
   </div>
   <div class="statslegendline">
-    <img src="./img/shadowhunter.gif" width=15 height=15> <i>tftgames</i>: games played on maps that only exist in the <a href="https://github.com/tylerkerr/wig-heat/blob/defb8bfc2a9cde3cbc6ebb7a7a32e4e34e2b85dc/wigquery.py#L42-L66">Frozen Throne mappool</a> for each game's gametype.
+    <img src="./img/farseer.gif" width=15 height=15 alt="nerd"> <i>rocgames</i>: games played on maps that only exist in the <a href="https://github.com/tylerkerr/wig-heat/blob/defb8bfc2a9cde3cbc6ebb7a7a32e4e34e2b85dc/wigquery.py#L29-L40">Reign of Chaos mappool</a> for each game's gametype.
   </div>
   <div class="statslegendline">
-    <img src="./img/priestessofthemoon.gif" width=15 height=15> <i>overlapgames</i>: games played on a map that exists in both the RoC and TFT mappools and are therefore ambiguous in terms of which game they were played in.
+    <img src="./img/shadowhunter.gif" width=15 height=15 alt="nerd"> <i>tftgames</i>: games played on maps that only exist in the <a href="https://github.com/tylerkerr/wig-heat/blob/defb8bfc2a9cde3cbc6ebb7a7a32e4e34e2b85dc/wigquery.py#L42-L66">Frozen Throne mappool</a> for each game's gametype.
   </div>
   <div class="statslegendline">
-    <img src="./img/goblintinker.gif" width=15 height=15> <i>tftratio</i>: the ratio of known TFT games to known RoC games, based on the mappool calculations above.
+    <img src="./img/priestessofthemoon.gif" width=15 height=15 alt="nerd"> <i>overlapgames</i>: games played on a map that exists in both the RoC and TFT mappools and are therefore ambiguous in terms of which game (RoC/TFT) they were played in.
   </div>
   <div class="statslegendline">
-    <img src="./img/pitlord.gif" width=15 height=15> <i>estimatedtftgames</i>: using the ratio above to divide up ambiguous games ('overlapgames'), the estimated number of TFT games in a realm/gametype.
+    <img src="./img/goblintinker.gif" width=15 height=15 alt="big nerd"> <i>tftratio</i>: the ratio of known TFT games to known RoC games, based on the mappool calculations above.
   </div>
   <div class="statslegendline">
-    <img src="./img/lich.gif" width=15 height=15> <i>estimatedrocgames</i>: the inverse of estimatedtftgames.
+    <img src="./img/pitlord.gif" width=15 height=15 alt="fat nerd"> <i>estimatedtftgames</i>: using the ratio above to divide up ambiguous games ('overlapgames'), the estimated number of TFT games in a realm/gametype.
+  </div>
+  <div class="statslegendline">
+    <img src="./img/lich.gif" width=15 height=15 alt="nerd"> <i>estimatedrocgames</i>: the inverse of estimatedtftgames.
   </div>
 </div>
 </body>
