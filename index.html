@@ -5,72 +5,118 @@
 <script src = "./nv.d3.js"></script>
 <link rel = "stylesheet" href = "./nv.d3.css">
 <style>
-html, body{
-    height: 100%;
+body {
+  font-family: "Helvetica Neue", Helvetica, sans-serif;
+  margin: 0;
+  padding: 0;
 }
-.container div{
-    height:50vh; 
-    width:50%;
+
+body, html {
+  height: 100%;
+  width: 100%;
 }
+
+#container {
+  flex-direction: column;
+  height: 100%;
+}
+
+#tabs {
+  margin-top: 10px;
+  display:flex;
+}
+
+#charts {
+  flex: 1;
+}
+
+#chart {
+  height: 100%;
+}
+
+.tab {
+  margin-left: 10px;
+  border: 1px solid #ccc;
+  background-color: #f1f1f1;
+  /*display: inline-block;*/
+}
+
+.tab a {
+    background-color: inherit;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 14px 16px;
+    transition: 0.3s;
+}
+
+.tab a:hover {
+    background-color: #ddd;
+}
+
+.tab a.active {
+    background-color: #ccc;
+}
+
+
 </style>
+
+
+
 </head>
+
+
 
 <div id="container">
   <div id="tabs">
     <div class="tab" id="tab-allrealms">
-      All Gateways
+      <a href="#allrealms">All Realms</a>
     </div>
     <div class="tab" id="tab-northrend">
-      Northrend
+      <a href="#northrend">Northrend</a>
     </div>
     <div class="tab" id="tab-azeroth">
-      Azeroth
+      <a href="#azeroth">Azeroth</a>
     </div>
     <div class="tab" id="tab-lordaeron">
-      Lordaeron
+      <a href="#lordaeron">Lordaeron</a>
     </div>
     <div class="tab" id="tab-kalimdor">
-      Kalimdor
+      <a href="#kalimdor">Kalimdor</a>
+    </div>
+    <div class="tab" id="tab-kalimdor">
+      <a href="#">Statistics</a>
+    </div>
+    <div class="tab" id="tab-kalimdor">
+      <a href="#">About</a>
     </div>
   </div>
   <div id="charts">
-    <div id="chart-allrealms" style="visibility:visible">
+    <div id="chart">
       <svg></svg>
     </div>
-    <div id="chart-northrend" style="visibility:hidden">
-      <svg></svg>
-    </div>
-    <div id="chart-azeroth" style="visibility:hidden">
-      <svg></svg>
-    </div>
-    <div id="chart-lordaeron" style="visibility:hidden">
-      <svg></svg>
-    </div>
-    <div id="chart-kalimdor" style="visibility:hidden">
-      <svg></svg>
-    </div>
+
   </div>
 </div>
 
 <script type="text/javascript">
 
 var gateways = ["allrealms", "azeroth", "northrend", "lordaeron", "kalimdor"]
+var selectedGateway = gateways[0]
+var processedGatewayData = {}
+var chart, chartData; 
+
 gateways.forEach(function(gateway){
   var tab = document.querySelector('#tab-' + gateway)
   var chart = document.querySelector('#chart-' + gateway)
-  tab.onclick = function(){
-    chart.style.display = 'block'
-    chart.style.visibility = 'visible'
-    gateways.forEach(function(g){
-      if (g != gateway){
-        var chartToHide = document.querySelector('#chart-' + g)
-        chartToHide.style.display = 'none'
-      }
-    })
-  }
-})
 
-gateways.forEach(function(gateway){
+  // bind click event to tab
+  tab.onclick = function(){
+      update(gateway)
+  }
+
+  // process csv data 
   d3.csv("data/gamesbytype-" + gateway + ".csv",function(err,data){
       var dataToPlot = Object.keys(data[0]).filter(function(k){return k!="date"})
         .map(function(k){
@@ -81,37 +127,57 @@ gateways.forEach(function(gateway){
            }
           })}
         })
-        
-      nv.addGraph(function() {
-        var chart = nv.models.lineWithFocusChart();
-    
-        chart.xAxis
-            .tickFormat(function(d) { return d3.time.format('%x')(new Date(d)) })
-        chart.x2Axis
-            .tickFormat(function(d) { return ''})
-    
-        chart.yAxis
-            .tickFormat();
-        chart.y2Axis
-          .tickFormat(function(d) { return ''})
 
-        // chart.color(function(d) {
-        //   if ( d.key == 'Kalimdor') return '#ff0000';
-        //   return 'green';
-        // })
-    
-        d3.select('#chart-' + gateway + ' svg')
-            .datum(dataToPlot)
-            .transition().duration(500)
-            .call(chart);
-    
-        nv.utils.windowResize(chart.update);
-    
-        return chart;
-      });
-    
-    })  
-});  
+      processedGatewayData[gateway] = dataToPlot
+    })
+})
+
+function update(gateway) {
+    var data = processedGatewayData[gateway]
+    chartData.datum(data).transition().duration(500).call(chart);
+    nv.utils.windowResize(chart.update);
+};
+  
+nv.addGraph(function() {
+  chart = nv.models.lineWithFocusChart();
+
+  chart.xAxis
+      .tickFormat(function(d) { return d3.time.format('%x')(new Date(d)) })
+  chart.x2Axis
+      .tickFormat(function(d) { return ''})
+
+  chart.yAxis
+      .tickFormat();
+  chart.y2Axis
+    .tickFormat(function(d) { return ''})
+
+  chart.color(function(d) {
+    if (d.key == 'Northrend') return '#75a7e8';
+    if (d.key == 'Azeroth') return '#d62728';
+    if (d.key == 'Lordaeron') return '#255ddc';
+    if (d.key == 'Kalimdor') return '#6b23ad';
+    if (d.key == 'Solo') return '#1f77b4';
+    if (d.key == 'FFA') return '#ffa10d';
+    if (d.key == 'Tournament') return '#bbbbbb';
+    if (d.key == 'Random 2v2') return '#e9d9ff';
+    if (d.key == 'Random 3v3') return '#ff8c9c';
+    if (d.key == 'Random 4v4') return '#ff4eba';
+    if (d.key == 'Arranged 2v2') return '#aec7e8';
+    if (d.key == 'Arranged 3v3') return '#50e8e6';
+    if (d.key == 'Arranged 4v4') return '#15e82e';
+  })
+
+  chartData = d3.select('#chart svg')
+      .datum(processedGatewayData[selectedGateway])
+
+  chartData.transition().duration(500)
+      .call(chart);
+
+  nv.utils.windowResize(chart.update);
+
+  return chart;
+});
+
 </script>
 
 </html>
