@@ -150,11 +150,9 @@ def tftratiorandom(gameid, tftratio): # randomly return true or false, weighted 
         return False
 
 def istftgame(gamecounts, gametype, gamemap, gameid, tftratio): # returns true if we think it's a tft game.
-                                            # first check using mappools. if it's an overlapping map,
-                                            # randomly assign tft/roc using tftratiorandom()
-    if gametype not in gametypes['roc']:
-        return True
-    if gamemap not in rocmaps[gametype]:
+    if gametype not in gametypes['roc']:    # first check using mappools. if it's an overlapping map,
+        return True                         # randomly assign tft/roc using tftratiorandom()
+    if gamemap not in rocmaps[gametype]:    
         return True
     if gamemap not in tftmaps[gametype]:
         return False
@@ -286,6 +284,8 @@ def datagen_prepgamecounts():
         writer.writeheader()
 
 def datagen_gamecounts(gamecounts, gateway): # parseable CSV of all of the data from getgamecounts()
+    print("[-] generating gamecount export")
+    starttime = time()
     filename = './data/gamecounts.csv'
     fieldnames = ['gateway', 'gametype', 'allgames', 'shortgames', 'realgames', 'realratio',
               'rocgames', 'tftgames', 'overlapgames', 'tftratio', 
@@ -330,6 +330,8 @@ def datagen_gamecounts(gamecounts, gateway): # parseable CSV of all of the data 
                         'tftratio': totals['tftratio'], 
                         'estimatedtftgames': totals['estimatedtftgames'], 
                         'estimatedrocgames': totals['estimatedrocgames']})
+    totaltime = format(time() - starttime, '.2f')
+    print("[+] finished gamecount export in %ss" % totaltime)
 
 def datagen_prepallrealmsperday():
     filename = './data/gamesbytype-allrealms.csv'
@@ -353,6 +355,8 @@ def datagen_allrealmsperday(gateway): # CSV of total games (incl. RoC) by day, b
     return dict(OrderedDict(sorted(gamesperdate.items())))
 
 def datagen_finalizeallrealmsperday(totalsperday):
+    print("[-] finalizing total games per day")
+    starttime = time()
     filename = './data/gamesbytype-allrealms.csv'
     fieldnames = ['date'] + gateways
     totals = {}
@@ -381,6 +385,8 @@ def datagen_finalizeallrealmsperday(totalsperday):
                                  'Azeroth': totals[day]['Azeroth'],
                                  'Lordaeron': totals[day]['Lordaeron'],
                                  'Kalimdor': totals[day]['Kalimdor']})
+    totaltime = format(time() - starttime, '.2f')
+    print("[+] finished finalizing total games per day in %ss" % totaltime)
 
 def datagen_gamesbytype(gamecounts, gateway): # CSV of games per day (TFT only)
     print("[-] generating games by type per day")
