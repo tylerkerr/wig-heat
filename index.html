@@ -86,14 +86,19 @@ gateways.forEach(function(gateway){
         var chart = nv.models.lineWithFocusChart();
     
         chart.xAxis
-            .tickFormat(function(d) { return d3.time.format('%x')(new Date(d)) });
+            .tickFormat(function(d) { return d3.time.format('%x')(new Date(d)) })
         chart.x2Axis
-            .tickFormat(function(d) { return ''});
+            .tickFormat(function(d) { return ''})
     
         chart.yAxis
             .tickFormat();
         chart.y2Axis
-          .tickFormat(function(d) { return ''});
+          .tickFormat(function(d) { return ''})
+
+        // chart.color(function(d) {
+        //   if ( d.key == 'Kalimdor') return '#ff0000';
+        //   return 'green';
+        // })
     
         d3.select('#chart-' + gateway + ' svg')
             .datum(dataToPlot)
