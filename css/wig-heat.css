@@ -9,6 +9,11 @@ body, html {
   width: 100%;
 }
 
+a {
+  color: #0376d9;
+  text-decoration: none;
+}
+
 #container {
   flex-direction: column;
   height: 100%;
@@ -39,7 +44,7 @@ body, html {
     border: none;
     outline: none;
     cursor: pointer;
-    padding: 14px 16px;
+    padding: 8px 8px;
     transition: 0.3s;
 }
 
@@ -47,6 +52,15 @@ body, html {
     background-color: #ddd;
 }
 
-.tab a.active {
-    background-color: #ccc;
+.active {
+    background-color: #bbb;
+}
+
+.statslegend {
+    margin: 20px 20% 20px 20%;
+}
+
+.statslegendline {
+  margin-bottom: 8px;
+  font: .8em "Helvetica Neue", Helvetica, sans-serif;
 }

@@ -1,7 +1,20 @@
-
 var gateways = ["allrealms", "azeroth", "northrend", "lordaeron", "kalimdor"]
-var selectedGateway = gateways[0]
+
+if(window.location.hash) {
+  var frag = window.location.hash.replace("#", "")
+  if (gateways.indexOf(frag) >= 0) {
+    var selectedGateway = frag
+  }
+  else {
+    var selectedGateway = gateways[0]
+    window.location.hash = '#' + gateways[0];
+  }
+} else {
+  var selectedGateway = gateways[0]
+}
+
 var processedGatewayData = {}
+var loadedDataCount = 0;
 var chart, chartData; 
 
 gateways.forEach(function(gateway){
@@ -26,6 +39,7 @@ gateways.forEach(function(gateway){
         })
 
       processedGatewayData[gateway] = dataToPlot
+      loadedDataCount ++;
     })
 })
 
@@ -34,43 +48,50 @@ function update(gateway) {
     chartData.datum(data).transition().duration(500).call(chart);
     nv.utils.windowResize(chart.update);
 };
-  
-nv.addGraph(function() {
-  chart = nv.models.lineWithFocusChart();
 
-  chart.xAxis
-      .tickFormat(function(d) { return d3.time.format('%x')(new Date(d)) })
-  chart.x2Axis
+var tryCreateChart = setInterval(function(){
+  console.log("a trial");
+if (loadedDataCount == gateways.length) {
+  nv.addGraph(function() {
+    chart = nv.models.lineWithFocusChart();
+
+    chart.xAxis
+        .tickFormat(function(d) { return d3.time.format('%x')(new Date(d)) })
+    chart.x2Axis
+        .tickFormat(function(d) { return ''})
+
+    chart.yAxis
+        .tickFormat();
+    chart.y2Axis
       .tickFormat(function(d) { return ''})
 
-  chart.yAxis
-      .tickFormat();
-  chart.y2Axis
-    .tickFormat(function(d) { return ''})
+    chart.color(function(d) {
+      if (d.key == 'Northrend') return '#75a7e8';
+      if (d.key == 'Azeroth') return '#d62728';
+      if (d.key == 'Lordaeron') return '#255ddc';
+      if (d.key == 'Kalimdor') return '#6b23ad';
+      if (d.key == 'Solo') return '#1f77b4';
+      if (d.key == 'FFA') return '#ffa10d';
+      if (d.key == 'Tournament') return '#bbbbbb';
+      if (d.key == 'Random 2v2') return '#e9d9ff';
+      if (d.key == 'Random 3v3') return '#ff8c9c';
+      if (d.key == 'Random 4v4') return '#ff4eba';
+      if (d.key == 'Arranged 2v2') return '#aec7e8';
+      if (d.key == 'Arranged 3v3') return '#50e8e6';
+      if (d.key == 'Arranged 4v4') return '#15e82e';
+    })
 
-  chart.color(function(d) {
-    if (d.key == 'Northrend') return '#75a7e8';
-    if (d.key == 'Azeroth') return '#d62728';
-    if (d.key == 'Lordaeron') return '#255ddc';
-    if (d.key == 'Kalimdor') return '#6b23ad';
-    if (d.key == 'Solo') return '#1f77b4';
-    if (d.key == 'FFA') return '#ffa10d';
-    if (d.key == 'Tournament') return '#bbbbbb';
-    if (d.key == 'Random 2v2') return '#e9d9ff';
-    if (d.key == 'Random 3v3') return '#ff8c9c';
-    if (d.key == 'Random 4v4') return '#ff4eba';
-    if (d.key == 'Arranged 2v2') return '#aec7e8';
-    if (d.key == 'Arranged 3v3') return '#50e8e6';
-    if (d.key == 'Arranged 4v4') return '#15e82e';
-  })
+    chartData = d3.select('#chart svg')
+        .datum(processedGatewayData[selectedGateway])
 
-  chartData = d3.select('#chart svg')
-      .datum(processedGatewayData[selectedGateway])
+    chartData.transition().duration(500)
+        .call(chart);
 
-  chartData.transition().duration(500)
-      .call(chart);
+    nv.utils.windowResize(chart.update);
 
-  nv.utils.windowResize(chart.update);
+    return chart;
+  }); 
+  clearInterval(tryCreateChart);
+}
+},15);
 
-  return chart;
-});
