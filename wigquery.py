@@ -376,7 +376,7 @@ def datagen_finalizeallrealmsperday(totalsperday):
 
     with open(filename, 'a') as csvfile:
         writer = DictWriter(csvfile, fieldnames=fieldnames)
-        for day in dict(OrderedDict(sorted(totals.items()))):
+        for day in OrderedDict(sorted(totals.items())):
             if day == gettoday():
                 pass
             else:
