@@ -138,6 +138,9 @@ def adjusttimezone(gateway, epoch):
 def gettoday():
     return strftime('%Y-%m-%d')
 
+def gettomorrow():
+    tomorrow = strftime('%Y-%m-') + str(int(strftime('%d')) + 1)
+    return tomorrow
 # --------------- ROC/TFT DIFFERENTIATION ---------------
 
 def tftratiorandom(gameid, tftratio): # randomly return true or false, weighted by the tft:roc ratio provided
@@ -299,7 +302,7 @@ def datagen_gamecounts(gamecounts, gateway): # parsable CSV of all of the data f
             try:
                 realratio = format((gamecounts[gametype]['realgames'] / 
                                       gamecounts[gametype]['shortgames']), '.2f')
-            except:
+            except: # in case of divison by zero
                 realratio = None
             writer.writerow({'gateway': gateway, 'gametype': gametype,
                             'allgames': gamecounts[gametype]['allgames'], 
@@ -377,7 +380,7 @@ def datagen_finalizeallrealmsperday(totalsperday):
     with open(filename, 'a') as csvfile:
         writer = DictWriter(csvfile, fieldnames=fieldnames)
         for day in OrderedDict(sorted(totals.items())):
-            if day == gettoday():
+            if day == gettoday() or day == gettomorrow():
                 pass
             else:
                 writer.writerow({'date': day, 
@@ -411,7 +414,7 @@ def datagen_gamesbytype(gamecounts, gateway): # CSV of games per day (TFT only)
         writer = DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
         for date in OrderedDict(sorted(gamesperdate.items())):
-            if date == gettoday():
+            if date == gettoday() or date == gettomorrow():
                 pass
             else:
                 writer.writerow({'date': date, 'Solo': gamesperdate[date]['Solo'], 

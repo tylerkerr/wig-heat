@@ -52,13 +52,22 @@
     </div>
     <div class="aboutboxbody">
       <div class="aboutline">
-        <a href="http://classic.battle.net/war3/basics/rookiemistakes.shtml">don't forget about these sweet tricks</a> Howdy! Wig-heat is a project from the friends behind replay hosting site <a href="https://highper.ch">Highper.ch</a>, iconic mountaineering strat <a href="https://highper.ch/aoh/index.php">highperching</a>, and (back in the day) preeminent arranged team collective Clan TOWA. Our native gametypes are 3v3 and 4v4 AT, and as the war3 playerbase has dwindled it has become increasingly difficult to actually find games in these purest of gametypes.
+        Howdy! Wig-heat is a project from the friends behind replay hosting site <a href="https://highper.ch">Highper.ch</a>, iconic mountaineering strat <a href="https://highper.ch/aoh/index.php">highperching</a>, and (back in the day) preeminent arranged team collective Clan TOWA. Our native gametypes are 3v3 and 4v4 AT, and as the war3 playerbase has dwindled it has become increasingly difficult to actually find games in these purest of gametypes.
       </div>
       <div class="aboutline">
-        In attempting to determine the hottest times for specific gametypes, it was clear that we'd have to gather information about all games. We personally only care about 3s and 4s AT, but if we have all of that data, why not publish information of a broader scope? War3 has been declining for quite a while, but recently such events as <a href="http://web.archive.org/web/20170622070527/https://us.battle.net/forums/en/bnet/topic/20756885804">significant patches by Blizzard</a>, <a href="https://www.twitch.tv/followgrubby">Grubby's return to the game</a>, and <a href="https://www.twitch.tv/back2warcraft">dedicated tournament coverage</a> appear to be imparting at least some new life into the game. This tool will, hopefully, help to quantify the renewed interest in the game.
+        In attempting to determine the hottest times for specific gametypes, it was clear that we'd have to gather information about all games. We personally only care about 3s and 4s AT, but if we have all of that data, why not publish information of a broader scope? War3 has been declining for quite a while, but recently such events as <a href="http://web.archive.org/web/20170622070527/https://us.battle.net/forums/en/bnet/topic/20756885804">significant patches by Blizzard</a>, <a href="https://www.twitch.tv/followgrubby">Grubby's return to the game</a>, and <a href="https://www.twitch.tv/back2warcraft">dedicated tournament coverage</a> appear to be imparting at least some new life to the game. This tool will, hopefully, help to quantify the renewed interest in the game.
       </div>
       <div class="aboutline">
-        <a href="https://github.com/tylerkerr/wig-heat">Wig-heat is open-source</a> - if you want to add or change functionality or style, send me a pull request!
+        The software powering the site, <a href="https://github.com/tylerkerr/wig-heat">Wig-heat</a>, is open-source - if you want to add or change functionality or style, <a href="https://github.com/tylerkerr/wig-heat/pull/new/master">send me a pull request</a>!
+      </div>
+      <div class="aboutline">
+        Tons of thanks to iggy_the_fisk, Mata, and pecanswa for helping build this. Additional thanks to the rest of the crew for playing war3 with me for 11 years: timg4strok, Blinn, Iceberg-Slim, dnkles, Thormjun, and Shamshel.
+      </div>
+      <div class="aboutline">
+        If you want to get in touch, <a href="mailto:kerr.tyler@gmail.com">send me an email</a> or <a href="https://twitter.com/bearand">@ me</a>. See ya!
+      </div>
+      <div class="aboutline" style="padding-left: 64px;">
+        <i>—bearand</i>
       </div>
       <div class="aboutline" style="text-align: center;">
         <b>Q&A</b>
@@ -73,8 +82,50 @@
         <b>Q:</b> <i>How does this all work?</i>
       </div>
       <div class="aboutline">
-        <b>A:</b> <a href="http://classic.battle.net/war3/ladder/w3xp-ladders.aspx?Gateway=Northrend">Here!</a> GameIDs are sequential, so it's pretty easy to scrape them all.
+        <b>A:</b> Python 3, BeautifulSoup, SQLAlchemy/SQLite, d3.js, NVD3, and cron. We first traverse each game's detail page in order (in <a href="https://github.com/tylerkerr/wig-heat/blob/master/wigscraper.py">wigscraper.py</a>), grabbing the GameID, date/time, gametype, game length, and map and shoving it all into a database. Once we have enough games, we can generate useful collections of data to be interpreted and displayed (done in <a href="https://github.com/tylerkerr/wig-heat/blob/master/wigquery.py">wigquery.py</a>). After millions of games have been crunched to useful data the form of CSVs, a static frontend displays the visualizations using d3.js, mostly via NVD3.
       </div>
+      <div class="aboutline">
+        <b>Q:</b> <i>How often is the data updated?</i>
+      </div>
+      <div class="aboutline">
+        <b>A:</b> Daily. The previous day's games are fetched and new queries are run starting at 08:00 UTC. The previous day's data will be visible at around 09:00 UTC.
+      </div>
+      <div class="aboutline">
+        <b>Q:</b> <i>Why does the data only cover 2017?</i>
+      </div>
+      <div class="aboutline">
+        <b>A:</b> Logging each game requires an http request to the Ladders page, and with ~3.8 million total games played in 2016, that's a lot of requests! I'm trying to be considerate to Blizzard by not parallelizing the scraping process and blasting their servers, so it'll take some time - I'd estimate that 2016 data will be up sometime in August. It's possible that eventually I'll have the entire ladders history (all the way back to June 2008), but that's about 150 million total games - we'll see. Currently an EC2 t2.small takes about a minute per million games to crunch down to CSVs. Some rearchitecture may be required...
+      </div>
+      <div class="aboutline">
+        <b>Q:</b> <i>Can I play around with your data?</i>
+      </div>
+      <div class="aboutline">
+        <b>A:</b> Sure! The daily CSV exports are <a href="/data/">here</a>, and the SQLite database files are on <a href="https://github.com/tylerkerr/wig-heat">Github</a> (though they won't always be up-to-date).
+      </div>
+      <div class="aboutline">
+        <b>Q:</b> <i>What about w3arena and netease?</i>
+      </div>
+      <div class="aboutline">
+        <b>A:</b> I know - they're not included, this is battle.net data only. If you're aware of an API or datasource for the alternate ladders that could be parsed to <tt>[unique gameid, datetime, gametype, gamelength, map]</tt>, let me know or send a PR and I'd be happy to add them!
+      </div>
+      <div class="aboutline">
+        <b>Q:</b> <i>What is "Wig"?</i>
+      </div>
+      <div class="aboutline">
+        <b>A:</b> "<b><u>W</u></b>arcraft" "<b><u>I</u></b>II" "<b><u>G</u></b>ames". e.g. "Do you want to wig?", "I'm wigging out", "It's prime time, there are wigs to be had"...
+      </div>
+      <div class="aboutline">
+        <b>Q:</b> <i>web site doesn't work on my computer?</i>
+      </div>
+      <div class="aboutline">
+        <b>A:</b> Use a modern browser and OS
+      </div>
+      <div class="aboutline">
+        <b>Q:</b> <i>I'm bad at war3?</i>
+      </div>
+      <div class="aboutline">
+        <b>A:</b> sorry to hear that...<a href="http://classic.battle.net/war3/basics/rookiemistakes.shtml">don't forget about these bad boys</a> 
+      </div>  
     </div>
   </div>
 </div>
