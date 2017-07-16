@@ -52,6 +52,12 @@ function update(gateway) {
     var data = processedGatewayData[gateway]
     chartData.datum(data).transition().duration(500).call(chart);
     nv.utils.windowResize(chart.update);
+    d3.select('#chart' + selectedGateway + ' svg')
+      .append("text")
+      .attr("x", 200)             
+      .attr("y", 100)
+      .attr("text-anchor", "middle")  
+      .text("Sample Charts");
 };
 
 var tryCreateChart = setInterval(function(){
@@ -61,7 +67,7 @@ if (loadedDataCount == gateways.length) {
     chart = nv.models.lineWithFocusChart();
 
     chart.xAxis
-        .tickFormat(function(d) { return d3.time.format('%x')(new Date(d)) })
+        .tickFormat(function(d) { return d3.time.format('%Y-%-m-%-d')(new Date(d)) })
     chart.x2Axis
         .tickFormat(function(d) { return ''})
 
@@ -69,6 +75,7 @@ if (loadedDataCount == gateways.length) {
         .tickFormat();
     chart.y2Axis
       .tickFormat(function(d) { return ''})
+
 
     chart.color(function(d) {
       if (d.key == 'Northrend') return '#75a7e8';
@@ -99,4 +106,3 @@ if (loadedDataCount == gateways.length) {
   clearInterval(tryCreateChart);
 }
 },15);
-

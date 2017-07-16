@@ -65,3 +65,38 @@ a {
   margin-bottom: 12px;
   font: .8em "Helvetica Neue", Helvetica, sans-serif;
 }
+
+.aboutbox {
+  width: 50%;
+  margin: 50px auto;
+  border: 1px solid black ;
+  display: table;
+  table-layout: fixed;
+}
+
+}
+.aboutheader {
+  background-color: green;
+  color: #fff;
+  font-weight: normal;
+  height: 2em;
+  position: relative;
+}
+.abouttitle { /* title bar text */
+  position: relative;
+  left: 0.75rem;
+  top: 0;
+  bottom: 0;
+  font: 100 1em/2em Helvetica, sans-serif;
+  width: 100%; /* width of searchbox */
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap; 
+  text-align: center;
+}
+.abouttext {
+
+}
+.aboutline {
+  font: .8em "Helvetica Neue", Helvetica, sans-serif;
+}

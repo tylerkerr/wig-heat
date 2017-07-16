@@ -10,7 +10,8 @@ $(function () {
     days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
     times = ["1a", "2a", "3a", "4a", "5a", "6a", "7a", "8a", "9a", "10a", "11a", "12a", "1p", "2p", "3p", "4p", "5p", "6p", "7p", "8p", "9p", "10p", "11p", "12p"];
   datasets = ["data/weekheatmap-northrend-solo.csv", "data/weekheatmap-northrend-random4v4.csv", "data/weekheatmap-azeroth-solo.csv", "data/weekheatmap-azeroth-random4v4.csv"];
-
+    gateways = ["northrend", "azeroth", "lordaeron", "kalimdor"]
+    gametypes = ["solo", "random2v2", "random3v3", "random4v4", "arranged2v2", "arranged3v3", "arranged4v4", "tournament", "ffa"]
   var svg = d3.select("#chart").append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
