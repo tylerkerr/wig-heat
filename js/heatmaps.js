@@ -10,19 +10,18 @@ $(function () {
     colors = ["#ffffff", "#fefefe", "#fefdfd", "#fefcfc", "#fefcfb", "#fefbfa", "#fefbf9", "#fefaf9", "#fefaf8", "#fefaf7", "#fefaf6", "#fefaf5", "#fefaf4", "#fefaf3", "#fefaf2", "#fdfbf1", "#fdfbf0", "#fdfcef", "#fdfdee", "#fdfded", "#fcfdec", "#fbfdeb", "#fafdeb", "#f9fdea", "#f8fde9", "#f6fde8", "#f5fde7", "#f4fde6", "#f2fde6", "#f0fde5", "#effce4", "#edfce3", "#ebfce2", "#e9fce1", "#e8fce1", "#e5fce0", "#e3fcdf", "#e1fcde", "#dffcdd", "#ddfcdc", "#dcfcdd", "#dbfcde", "#dafcdf", "#d9fce0", "#d8fce1", "#d8fce2", "#d7fbe3", "#d6fbe4", "#d5fbe6", "#d4fbe7", "#d3fbe8", "#d3fbea", "#d2fbec", "#d1fbed", "#d0fbef", "#cffbf1", "#cffbf3", "#cefbf5", "#cdfbf7", "#ccfbf9", "#cbfafb", '#caf7fa','#c8f5fa','#c5f2fa','#c2effa','#bfebfa','#bce7fa','#b9e3fa','#b6dff9','#b3dbf9','#b0d6f9','#add1f9','#aacbf9','#a7c6f9','#a5c0f9','#a2baf9','#9fb4f8','#9cadf8','#99a6f8','#969ff8','#9398f8','#9190f8','#938df8','#958bf7','#9888f7','#9b85f7','#9e82f7','#a17ff7','#a57cf7','#a979f7','#ad77f6','#b174f6','#b671f6','#bb6ef6','#c06bf6','#c668f6','#cb65f5','#d163f5','#d860f5','#de5df5','#e55af5','#ec57f5','#f355f5','#f452ef','#f44fe7','#f44cde','#f449d6','#f447cd','#f444c4','#f441bb','#f33eb1','#f33ba8','#f3399e','#f33693','#f33389','#f3307e','#f32e73','#f22b68','#f2285c','#f22551','#f22245','#f22039','#f21d2c','#f21a1f','#f11d17']
     days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
     times = ["1a", "2a", "3a", "4a", "5a", "6a", "7a", "8a", "9a", "10a", "11a", "12a", "1p", "2p", "3p", "4p", "5p", "6p", "7p", "8p", "9p", "10p", "11p", "12p"];
-    // datasets = ["data/weekheatmap-northrend-solo.csv", "data/weekheatmap-northrend-random4v4.csv", "data/weekheatmap-azeroth-solo.csv", "data/weekheatmap-azeroth-random4v4.csv"];
-    gateways = ["northrend", "azeroth", "lordaeron", "kalimdor"]
-    gametypes = ["solo", "random2v2", "random3v3", "random4v4", "arranged2v2", "arranged3v3", "arranged4v4", "tournament", "ffa"]
+    gateways = ["Northrend", "Azeroth", "Lordaeron", "Kalimdor"]
+    gametypes = ["Solo", "Random 2v2", "Random 3v3", "Random 4v4", "Arranged 2v2", "Arranged 3v3", "Arranged 4v4", "Tournament", "FFA"]
     var datasets = []
-
     gateways.forEach(function(gateway){
       gametypes.forEach(function(gametype){
-        datasets.push("data/weekheatmap-" + gateway + "-" + gametype + ".csv")
+        datasets.push(gateway + " - " + gametype)
       })
     })
 
-    console.log(datasets)
-
+  var makefilename = function (d){
+    return "data/weekheatmap-" +  d.toLowerCase().replace(/\s/g, '') + ".csv"
+  }
 
   var svg = d3.select("#chart").append("svg")
     .attr("width", width + margin.left + margin.right)
@@ -64,6 +63,9 @@ $(function () {
           .domain([d3.max(data, function (d) { return d.games; }) / 5, buckets / 5, d3.max(data, function (d) { return d.games; })])
           .range(colors);
 
+        var minval = 0
+        var maxval = d3.max(data, function (d) { return d.games; })
+
         var cards = svg.selectAll(".hour")
           .data(data, function (d) { return d.weekday + ':' + d.hour; });
 
@@ -79,7 +81,7 @@ $(function () {
           .attr("height", gridSize)
           .style("fill", colors[0]);
 
-        cards.transition().duration(1000)
+        cards.transition().duration(500)
           .style("fill", function (d) { return colorScale(d.games); });
 
         cards.select("title").text(function (d) { return d.games; });
@@ -99,18 +101,32 @@ $(function () {
           .attr("height", gridSize / 2)
           .style("fill", function (d, i) { return colors[i]; });
 
-        // legend.append("text")
-        //   .attr("class", "mono")
-        //   .text(function (d) { return "≥ " + Math.round(d); })
-        //   .attr("x", function (d, i) { return (width / colors.length / 1.77) * i; })
-        //   .attr("y", height + gridSize)
+        legend.append("text")
+          .attr("class", "mono")
+          .text(function (d,i) { 
+            if ((i+1) == colors.length) {
+              return maxval
+            } else if ((i !== 0) && ((i+1)%25)) {
+              return null
+            } else {
+              return Math.round(d);
+            }
+          })
+          .attr("x", function (d, i) { return (width / colors.length / 1.6) * i; })
+          .attr("y", height + gridSize)
+
+        legend.append("text")
+          .attr("class", "mono")
+          .text(minval)
+          .attr("x", width)
+          .attr("y", height + gridSize)
 
         legend.exit().remove();
 
       });
   };
 
-  heatmapChart(datasets[0]);
+  heatmapChart(makefilename(datasets[0]));
 
   var datasetpicker = d3.select("#dataset-picker").selectAll(".dataset-button")
     .data(datasets);
@@ -121,6 +137,6 @@ $(function () {
     .attr("type", "button")
     .attr("class", "dataset-button")
     .on("click", function (d) {
-      heatmapChart(d);
+      heatmapChart(makefilename(d));
     });
 });

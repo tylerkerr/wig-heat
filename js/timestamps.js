@@ -34,7 +34,7 @@ $(document).ready(function() {
 
   var csvfile_import = "./data/timestamps.csv".replace(/\&amp\;/g, '&');
   
-  $('.stampdiv .timestamps_import_wrap').CSVToTable( csvfile_import , { loadingText: 'Generating Table', loadingImage: 'https://campus.mst.edu/emctest/t4_template/content_types/search_sort_table/images/loading.gif', startLine: 0, tableClass: "timestamps_import", theadClass: "heading" }).bind("loadComplete",function() { 
+  $('.stampdiv .timestamps_import_wrap').CSVToTable( csvfile_import , { loadingText: 'crunching...', loadingImage: '../img/loading.gif', startLine: 0, tableClass: "timestamps_import", theadClass: "heading" }).bind("loadComplete",function() { 
     $('.stampdiv .timestamps_import_wrap').find('TABLE').tablesorter({ widgets: ["zebra"] });      
     $('.stampdiv .timestamps_import').filterTable({inputSelector:".stampdiv .timestamps_search"});
     assignButtons();
