@@ -67,23 +67,25 @@ a {
 }
 
 .aboutbox {
-  width: 50%;
-  margin: 50px auto;
-  border: 1px solid black ;
+  border-radius: 100px;
+  overflow: hidden;
+  padding: 100px;
+  margin: 10px auto 10px auto;
   display: table;
   table-layout: fixed;
+  width: 60%;
 }
 
-}
-.aboutheader {
-  background-color: green;
+.aboutboxheader { /* title bar thickness */
+  background-color: #30a724;
   color: #fff;
   font-weight: normal;
   height: 2em;
   position: relative;
 }
-.abouttitle { /* title bar text */
-  position: relative;
+
+.aboutboxtitle { /* title bar text */
+  position: absolute;
   left: 0.75rem;
   top: 0;
   bottom: 0;
@@ -94,9 +96,7 @@ a {
   white-space: nowrap; 
   text-align: center;
 }
-.abouttext {
 
-}
 .aboutline {
   font: .8em "Helvetica Neue", Helvetica, sans-serif;
 }

@@ -352,7 +352,7 @@ def datagen_allrealmsperday(gateway): # CSV of total games (incl. RoC) by day, b
         gamesperdate[gamedate] += 1
     totaltime = format(time() - starttime, '.2f')
     print("[+] finished total games per day in %ss" % totaltime)
-    return dict(OrderedDict(sorted(gamesperdate.items())))
+    return OrderedDict(sorted(gamesperdate.items()))
 
 def datagen_finalizeallrealmsperday(totalsperday):
     print("[-] finalizing total games per day")
