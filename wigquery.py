@@ -12,7 +12,7 @@ import random
 
 # --------------- INIT ---------------
 
-def mapinit(): # hardcoded arrays of game-specific variables
+def mapinit(): # hardcoded arrays of war3 maps
     global gametypes
     global rocmaps
     global tftmaps
@@ -66,7 +66,7 @@ def mapinit(): # hardcoded arrays of game-specific variables
                     'Bloodstone Mesa', 'Copper Canyon', 'Battleground']}
 
 
-def dbinit(gateway):
+def dbinit(gateway): # set up the sqlalchemy database binding
     global dbname
     global db
     global metadata
@@ -76,7 +76,7 @@ def dbinit(gateway):
     db = create_engine(dbname)
     metadata = MetaData(db)
     games = Table('wiggames', metadata, autoload=True)
-    minlength = 3
+    minlength = 3 # we'll be discarding games shorter than this (in minutes) in most queries
 
 # --------------- UTIL ---------------
 
@@ -107,7 +107,7 @@ def getyeardayfromepoch(epoch): # int 1-366, 1 = jan 1st
 def getyearfromepoch(epoch): # int 1-9999...
     return int(strftime('%Y', gmtime(epoch)))
 
-def getdatefromepoch(epoch):
+def getdatefromepoch(epoch): # e.g. 2017-06-22
     return strftime('%Y-%m-%d', gmtime(epoch))
 
 def daysinyear(year): # if i must...
@@ -120,7 +120,7 @@ def daysinyear(year): # if i must...
     else:
         return 366
 
-def isdst(gateway, epoch):
+def isdst(gateway, epoch): # kill me
     yearday = getyeardayfromepoch(epoch)
     if yearday > 70 and yearday < 308: # this is a little rough.
         return True # let's just say it accounts for players that have trouble adjusting to DST
@@ -162,7 +162,7 @@ def istftgame(gamecounts, gametype, gamemap, gameid, tftratio): # returns true i
     if gamemap in tftmaps[gametype] and gamemap in rocmaps[gametype]:
         return tftratiorandom(gameid, tftratio)
 
-def gettftgames(gamecounts, gametype): # return a list of all games we thing are tft for a given gametype
+def gettftgames(gamecounts, gametype): # return a list of all games that we think are tft for a given gametype
     tftgames = []
     gtgamesq = games.select((games.c.gametype == gametype) & (games.c.gamelength >= minlength))
     gtgames = run(gtgamesq)
@@ -185,22 +185,22 @@ def getgamecounts(): # getting counts per gametype and roc/tft ratios
                                 & (games.c.gamelength >= minlength)).count()
         realgames = run(realgamesq)[0]['tbl_row_count']
         if gametype in gametypes['roc']:
-            rocq = games.select((games.c.gametype == gametype) 
+            rocq = games.select((games.c.gametype == gametype) # maps in roc and not in tft
                                 & games.c.gamemap.notin_(tftmaps[gametype]) 
                                 & games.c.gamemap.in_(rocmaps[gametype]) 
                                 & (games.c.gamelength >= minlength)).count()
             rocgames = run(rocq)[0]['tbl_row_count']
-            tftq = games.select((games.c.gametype == gametype) 
+            tftq = games.select((games.c.gametype == gametype) # maps in tft and not in roc
                                 & games.c.gamemap.in_(tftmaps[gametype]) 
                                 & games.c.gamemap.notin_(rocmaps[gametype]) 
                                 & (games.c.gamelength >= minlength)).count()
             tftgames = run(tftq)[0]['tbl_row_count']
-            overlapq = games.select((games.c.gametype == gametype) 
+            overlapq = games.select((games.c.gametype == gametype) # maps in both roc and tft
                                 & games.c.gamemap.in_(tftmaps[gametype]) 
                                 & games.c.gamemap.in_(rocmaps[gametype]) 
                                 & (games.c.gamelength >= minlength)).count()
             overlapgames = run(overlapq)[0]['tbl_row_count']
-        else: # we don't need to do anything wild if the gametype isn't in roc, such as 4s RT or tournament
+        else: # we don't need to do anything wild if the gametype isn't in roc, such as 4sRT or tournament
             tftq = games.select((games.c.gametype == gametype) 
                                 & (games.c.gamelength >= minlength)).count()
             tftgames = run(tftq)[0]['tbl_row_count']
@@ -212,7 +212,7 @@ def getgamecounts(): # getting counts per gametype and roc/tft ratios
             estimatedtftgames = tftgames + tftoverlap
             estimatedrocgames = rocgames + rocoverlap
             tftratio = float(format(tftratio, '.2f'))
-        except:
+        except: # if there aren't any roc games we'll have division by zero.
             tftratio = None
             tftgames += overlapgames
             overlapgames = 0
@@ -246,8 +246,8 @@ def printgamecounts(gamecounts): # optional simple readout print to make logs mo
 
 # --------------- DATA OUTPUT FUNCTIONS ---------------
 
-def datagen_preptimestamps():
-    filename='./data/timestamps.csv'
+def datagen_preptimestamps(): # for cross-gateway queries we need to pre-write the headers
+    filename='./data/timestamps.csv' # because the query functions are called multiple times
     fieldnames = ['gateway', 'totalgames', 'oldestgamedate', 'oldestgameid', 
                   'newestgamedate', 'newestgameid', 'datemodified']
     with open(filename, 'w') as csvfile:
@@ -283,7 +283,7 @@ def datagen_prepgamecounts():
         writer = DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
 
-def datagen_gamecounts(gamecounts, gateway): # parseable CSV of all of the data from getgamecounts()
+def datagen_gamecounts(gamecounts, gateway): # parsable CSV of all of the data from getgamecounts()
     print("[-] generating gamecount export")
     starttime = time()
     filename = './data/gamecounts.csv'

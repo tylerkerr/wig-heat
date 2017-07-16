@@ -7,7 +7,6 @@ text.mono {
     font-size: 9pt;
     font-family: Consolas, courier;
     fill: #aaa;
-    text-align: right;
 }
 
 text.axis-workweek {
@@ -21,4 +20,8 @@ text.axis-worktime {
 .container svg {
     margin: auto;
     display: block;
+}
+
+.datapicker {
+    margin: auto;
 }

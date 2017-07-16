@@ -74,7 +74,7 @@ a {
   display: table;
   table-layout: fixed;
   width: 60%;
-
+  height: 800px;
 }
 
 .aboutboxheader {
@@ -100,6 +100,9 @@ a {
 
 .aboutboxbody {
   padding: 10px ;
+  border-right: 1px dashed black;
+  border-bottom: 1px dashed black;
+  border-left: 1px dashed black;
 }
 
 .aboutline {
