@@ -67,16 +67,17 @@ a {
 }
 
 .aboutbox {
-  border-radius: 100px;
   overflow: hidden;
   padding: 100px;
   margin: 10px auto 10px auto;
   display: table;
   table-layout: fixed;
   width: 60%;
+
 }
 
-.aboutboxheader { /* title bar thickness */
+.aboutboxheader {
+  border-radius: 7px 7px 0 0;
   background-color: #30a724;
   color: #fff;
   font-weight: normal;
@@ -84,19 +85,23 @@ a {
   position: relative;
 }
 
-.aboutboxtitle { /* title bar text */
-  position: absolute;
-  left: 0.75rem;
-  top: 0;
-  bottom: 0;
+.aboutboxtitle {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
   font: 100 1em/2em Helvetica, sans-serif;
-  width: 100%; /* width of searchbox */
-  text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap; 
-  text-align: center;
+}
+
+.aboutboxtitle img {
+  margin-right: 5px;
+}
+
+.aboutboxbody {
+  padding: 10px ;
 }
 
 .aboutline {
-  font: .8em "Helvetica Neue", Helvetica, sans-serif;
+  font: 1em Helvetica, sans-serif;
+  color: #000;
 }
