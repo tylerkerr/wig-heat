@@ -1,11 +1,12 @@
 rect.bordered {
     stroke: #E6E6E6;
-    stroke-width:2px;   
+    stroke-width:1px;   
 }
 
 text.mono {
     font-size: 9pt;
-    font-family: Consolas, courier;
+    /*font-family: Consolas, courier;*/
+    font-family: Helvetica. sans-serif;
     fill: #aaa;
 }
 
@@ -17,11 +18,37 @@ text.axis-worktime {
     fill: #000;
 }
 
-.container svg {
+.heatmap {;
+    width: 900px;
     margin: auto;
     display: block;
 }
 
-.datapicker {
+.heatmapbuttons {
+    width: 60%;
     margin: auto;
+    display: block;
+}
+
+.heatmaplegend {
+    width: 60%;
+    padding-top: 20px;
+}
+
+.heatmaplegendline {
+    padding: 5px;
+}
+
+.heatmapbuttons {
+    width: 875px;
+    margin: auto;
+}
+
+.gatewaypicker {
+    /*text-align: center;*/
+    padding-bottom: 20px;
+}
+
+.gametypepicker {
+    /*text-align: center;*/
 }

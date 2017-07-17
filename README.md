@@ -19,24 +19,20 @@ todo:
 
 ✅ creating visualizations with d3.js
 
-❌ creating interface for the visualizations
+✅ creating interface for the visualizations
 
 ❌ automating daily scraping and processing
 
 
 data presentations:
 
-* total games per day over year (stacked bar of all gametypes)
+* total games per day by realm, all realms (line)
 
-* games per realm by gametype (line graph)
-
-* games per gametype by realm (line graph)
-
-* separated by gametype: total games per day (calendar heatmap)
+* total games per day by gametype, each realm (line)
 
 * separated by gametype: average games per hour over week (week/hour heatmap)
 
-* ???
+* internal statistics (table)
 
 
 some useful gameIDs:

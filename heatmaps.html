@@ -38,14 +38,33 @@
       <a href="/about.html">About</a>
     </div>
   </div>
-  <div class="container">
+  <div class="heatmap">
     <div id="chart"></div>
-    <div id="dataset-picker"></div>
-    <div class="datapicker">
-      <input type="radio" name="gateway" value="Northrend">
-      <input type="radio" name="gateway" value="Azeroth">
-      <input type="radio" name="gateway" value="Lordaeron">
-      <input type="radio" name="gateway" value="Kalimdor">
+  </div>
+  <div class="heatmapbuttons">
+      <div class="gatewaypicker">
+        <input type="radio" name="gateway" value="Northrend" checked>Northrend
+        <input type="radio" name="gateway" value="Azeroth">Azeroth
+        <input type="radio" name="gateway" value="Lordaeron">Lordaeron
+        <input type="radio" name="gateway" value="Kalimdor">Kalimdor
+      </div>
+      <div class="gametypepicker">
+        <input type="radio" name="gametype" value="Solo" checked>Solo
+        <input type="radio" name="gametype" value="Random 2v2">Random 2v2
+        <input type="radio" name="gametype" value="Random 3v3">Random 3v3
+        <input type="radio" name="gametype" value="Random 4v4">Random 4v4
+        <input type="radio" name="gametype" value="Arranged 2v2">Arranged 2v2
+        <input type="radio" name="gametype" value="Arranged 3v3">Arranged 3v3
+        <input type="radio" name="gametype" value="Arranged 4v4">Arranged 4v4
+        <input type="radio" name="gametype" value="Tournament">Tournament
+        <input type="radio" name="gametype" value="FFA">FFA
+    </div>
+  <div class="heatmaplegend">
+    <div class="heatmaplegendline">
+      (<i>times are gateway-local</i>)
+    </div>
+    <div class="heatmaplegendline">
+      <i>Northrend: WEST/WEDT, Azeroth: EST/EDT, Lordaeron: PST/PDT, Kalimdor: KST</i>
     </div>
   </div>
 </body>
