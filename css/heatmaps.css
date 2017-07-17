@@ -28,15 +28,12 @@ text.axis-worktime {
     color: white;
 }
 
-/*.heatmapbuttons {
-    width: 60%;
+.heatmapbuttons {
     margin: auto;
 }
-*/
+
 .heatmaplegend {
-    /*width: 60%;*/
     text-align: center;
-    /*padding-top: 20px;*/
 }
 
 .heatmaplegendline {
@@ -47,7 +44,6 @@ text.axis-worktime {
 .heatmapbuttons {
     width: 875px;
     margin: auto;
-    /*display: inline-block;*/
 }
 
 .gatewaypicker {
@@ -55,7 +51,6 @@ text.axis-worktime {
 }
 
 .gametypepicker {
-    /*padding-bottom: 15px;*/
     line-height: 2em;
     font: .8em;
 }
@@ -65,21 +60,16 @@ input[type="radio"] {
     display: none;
 }
 
-/* style your lables/button */
 input[type="radio"] + label {
-    /* keep pointer so that you get the little hand showing when you are on a button */
     cursor: pointer;
-    /* the following are the styles */
     padding: 4px;
     border: 1px solid #ccc;
     background: #efefef;
     color: #aaa;
-    /*border-radius: 3px;*/
     text-shadow: 1px 1px 0 rgba(0,0,0,0);
 }
 
 input[type="radio"]:checked + label {
-    /* style for the checked/selected state */
     background: #777;
     border: 1px solid #444;
     text-shadow: 1px 1px 0 rgba(0,0,0,0.4);

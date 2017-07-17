@@ -119,4 +119,42 @@ a {
   padding-bottom: 16px;
 }
 
+.maintbox {
+  padding-top: 50px;
+  padding-bottom: 100px;
+  margin: 10px auto 10px auto;
+  width: 60%;
+}
 
+.maintboxheader {
+  border-radius: 7px 7px 0 0;
+  background-color: #ffb400;
+  color: #fff;
+  font-weight: normal;
+  height: 2em;
+  position: relative;
+}
+
+.maintboxtitle {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  font: 100 1em/2em Helvetica, sans-serif;
+}
+
+.maintboxbody {
+  padding: 10px ;
+  border-right: 1px dashed black;
+  border-bottom: 1px dashed black;
+  border-left: 1px dashed black;
+  border-radius: 0px 0px 7px 7px;
+}
+
+.maintboxline {
+  font: 1em Helvetica, sans-serif;
+  color: #000;
+  padding-top: 16px;
+  padding-bottom: 16px;
+  text-align: center;
+}

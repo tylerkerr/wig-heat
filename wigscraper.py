@@ -85,7 +85,7 @@ def main():
         startid = c.fetchone()[0]
 
     gameid = startid
-    consecutiveerrorlimit = 10
+    consecutiveerrorlimit = 5
     errors = 0
 
     while errors < consecutiveerrorlimit:

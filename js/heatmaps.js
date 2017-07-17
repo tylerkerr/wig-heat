@@ -103,6 +103,7 @@ $(function () {
               .attr("data-id", function (d) { return d.weekday + ':' + d.hour; })
               .attr("class", "cellcount")
               .attr("opacity", "0")
+              .attr("color", "#ccc")
               .text(function(d) { return d.games; })
               .on("mouseover",function(d){
                 d3.select('[data-id="' + d.weekday + ':' + d.hour +'"]')
