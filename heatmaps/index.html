@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF8">
+  <meta name="description" content="Monitoring the health of the Warcraft III Battle.net community via data visualization and statistics"> 
+  <meta name="keywords" content="warcraft 3 iii war3 wc3 arranged team random team 2v2 3v3 4v4 ffa northrend azeroth lordaeron kalimdor useast uswest europe asia highperch">
+  <link rel="stylesheet" type="text/css" href="/css/heatmaps.css">
+  <link rel = "stylesheet" href = "/css/wig-heat.css">
+  <script src="/js/jquery-3.2.1.min.js"></script>
+  <script src="/js/d3.min.js"></script>
+  <script src="/js/heatmaps.js"></script>
+  <title>arranged.team - the wigheat</title>
+</head>
+
+<body>
+  <div id="tabs">
+    <div class="tab" id="tab-allrealms">
+      <a href="/#allrealms">All Realms</a>
+    </div>
+    <div class="tab" id="tab-northrend">
+      <a href="/#northrend">Northrend</a>
+    </div>
+    <div class="tab" id="tab-azeroth">
+      <a href="/#azeroth">Azeroth</a>
+    </div>
+    <div class="tab" id="tab-lordaeron">
+      <a href="/#lordaeron">Lordaeron</a>
+    </div>
+    <div class="tab" id="tab-kalimdor">
+      <a href="/#kalimdor">Kalimdor</a>
+    </div>
+    <div class="tab active" id="tab-">
+      <a href="/heatmaps/">Heatmaps</a>
+    </div>
+    <div class="tab" id="tab-">
+      <a href="/stats/">Statistics</a>
+    </div>
+    <div class="tab" id="tab-">
+      <a href="/about/">About</a>
+    </div>
+  </div>
+  <div class="heatmap">
+    <div id="chart"></div>
+  </div>
+  <div class="heatmapbuttons">
+      <div class="gatewaypicker">
+        <input type="radio" name="gateway" id="Northrend" value="Northrend" checked>
+        <label for="Northrend">Northrend</label>
+        <input type="radio" name="gateway" id="Azeroth" value="Azeroth">
+        <label for="Azeroth">Azeroth</label>
+        <input type="radio" name="gateway" id="Lordaeron" value="Lordaeron">
+        <label for="Lordaeron">Lordaeron</label>
+        <input type="radio" name="gateway" id="Kalimdor" value="Kalimdor">
+        <label for="Kalimdor">Kalimdor</label>
+      </div>
+      <div class="gametypepicker">
+        <input type="radio" name="gametype" id="Solo" value="Solo" checked>
+        <label for="Solo">Solo</label>
+        <input type="radio" name="gametype" id="Random 2v2" value="Random 2v2">
+        <label for="Random 2v2">Random 2v2</label>
+        <input type="radio" name="gametype" id="Random 3v3" value="Random 3v3">
+        <label for="Random 3v3">Random 3v3</label>
+        <input type="radio" name="gametype" id="Random 4v4" value="Random 4v4">
+        <label for="Random 4v4">Random 4v4</label>
+        <input type="radio" name="gametype" id="Arranged 2v2" value="Arranged 2v2">
+        <label for="Arranged 2v2">Arranged 2v2</label>
+        <input type="radio" name="gametype" id="Arranged 3v3" value="Arranged 3v3">
+        <label for="Arranged 3v3">Arranged 3v3</label>
+        <input type="radio" name="gametype" id="Arranged 4v4" value="Arranged 4v4">
+        <label for="Arranged 4v4">Arranged 4v4</label>
+        <input type="radio" name="gametype" id="Tournament" value="Tournament">
+        <label for="Tournament">Tournament</label>
+        <input type="radio" name="gametype" id="FFA" value="FFA">
+        <label for="FFA">FFA</label>
+    </div>
+  <div class="heatmaplegend">
+    <div class="heatmaplegendline">
+      (<i>times are local by gateway: Northrend: WEST/WEDT, Azeroth: EST/EDT, Lordaeron: PST/PDT, Kalimdor: KST</i>)
+    </div>
+  </div>
+</body>
+</html>

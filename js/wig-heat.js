@@ -29,7 +29,7 @@ gateways.forEach(function(gateway){
   }
 
   // process csv data 
-  d3.csv("data/gamesbytype-" + gateway + ".csv",function(err,data){
+  d3.csv("/data/gamesbytype-" + gateway + ".csv",function(err,data){
       var dataToPlot = Object.keys(data[0]).filter(function(k){return k!="date"})
         .map(function(k){
           return {"key":k,"values":data.map(function(d){  

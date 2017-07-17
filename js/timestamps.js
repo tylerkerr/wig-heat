@@ -32,7 +32,7 @@ $('.stampdiv.timestamps_import_wrap').on('scroll', function () {checkButtonNeces
 
 $(document).ready(function() {
 
-  var csvfile_import = "./data/timestamps.csv".replace(/\&amp\;/g, '&');
+  var csvfile_import = "/data/timestamps.csv".replace(/\&amp\;/g, '&');
   
   $('.stampdiv .timestamps_import_wrap').CSVToTable( csvfile_import , { loadingText: 'crunching...', loadingImage: '../img/loading.gif', startLine: 0, tableClass: "timestamps_import", theadClass: "heading" }).bind("loadComplete",function() { 
     $('.stampdiv .timestamps_import_wrap').find('TABLE').tablesorter({ widgets: ["zebra"] });      

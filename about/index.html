@@ -1,11 +1,14 @@
+<!DOCTYPE html>
 <html>
 <head>
   <meta http-equiv="content-type" content="text/html; charset=UTF8">
-  <link rel = "stylesheet" href = "./css/stats.css">
-  <link rel = "stylesheet" href = "./css/wig-heat.css">
-  <script src=./js/jquery-3.2.1.min.js></script>
-  <script src=./js/stats.js></script>
-  <title>wigheat - how the wigs are made</title>
+  <meta name="description" content="Monitoring the health of the Warcraft III Battle.net community via data visualization and statistics"> 
+  <meta name="keywords" content="warcraft 3 iii war3 wc3 arranged team random team 2v2 3v3 4v4 ffa northrend azeroth lordaeron kalimdor useast uswest europe asia highperch">
+  <link rel = "stylesheet" href = "/css/stats.css">
+  <link rel = "stylesheet" href = "/css/wig-heat.css">
+  <script src=/js/jquery-3.2.1.min.js></script>
+  <script src=/js/stats.js></script>
+  <title>arranged.team - how the wigs are made</title>
 </head>
 
 <body>
@@ -26,33 +29,25 @@
       <a href="/#kalimdor">Kalimdor</a>
     </div>
     <div class="tab" id="tab-">
-      <a href="/heatmaps.html">Heatmaps</a>
+      <a href="/heatmaps/">Heatmaps</a>
     </div>
     <div class="tab" id="tab-">
-      <a href="/stats.html">Statistics</a>
+      <a href="/stats/">Statistics</a>
     </div>
     <div class="tab active" id="tab-">
-      <a href="/about.html">About</a>
+      <a href="/about/">About</a>
     </div>
   </div>
-  
-<!-- <div class="aboutbox">
-  <div class="aboutheader">
-    <img src="./img/archmage.gif"> hi everyone
-  </div>
-  <div class="abouttext">
-    <div class="aboutline"></div>
-  </div>
-</div> -->
+
 <div class="aboutbox">
   <div class="aboutboxheader">
-    <div class="aboutboxtitle">
-      <img src="./img/archmage.gif"> 
+    <div class="aboutboxtitle">   
+      <img src="/img/archmage.gif"> 
       <span>hi everyone</span>
     </div>
     <div class="aboutboxbody">
       <div class="aboutline">
-        Howdy! Wig-heat is a project from the friends behind replay hosting site <a href="https://highper.ch">Highper.ch</a>, iconic mountaineering strat <a href="https://highper.ch/aoh/index.php">highperching</a>, and (back in the day) preeminent arranged team collective Clan TOWA. Our native gametypes are 3v3 and 4v4 AT, and as the war3 playerbase has dwindled it has become increasingly difficult to actually find games in these purest of gametypes.
+        Howdy! <a href="/">arranged.team</a> is a project from the friends behind replay hosting site <a href="https://highper.ch">Highper.ch</a>, iconic mountaineering strat <a href="https://highper.ch/aoh/index.php">highperching</a>, and (back in the day) preeminent arranged team collective Clan TOWA. Our native gametypes are 3v3 and 4v4 AT, and as the war3 playerbase has dwindled it has become increasingly difficult to actually find games in these purest of gametypes.
       </div>
       <div class="aboutline">
         In attempting to determine the hottest times for specific gametypes, it was clear that we'd have to gather information about all games. We personally only care about 3s and 4s AT, but if we have all of that data, why not publish information of a broader scope? War3 has been declining for quite a while, but recently such events as <a href="http://web.archive.org/web/20170622070527/https://us.battle.net/forums/en/bnet/topic/20756885804">significant patches by Blizzard</a>, <a href="https://www.twitch.tv/followgrubby">Grubby's return to the game</a>, and <a href="https://www.twitch.tv/back2warcraft">dedicated tournament coverage</a> appear to be imparting at least some new life to the game. This tool will, hopefully, help to quantify the renewed interest in the game.
@@ -94,13 +89,25 @@
         <b>Q:</b> <i>Why does the data only cover 2017?</i>
       </div>
       <div class="aboutline">
-        <b>A:</b> Logging each game requires an http request to the Ladders page, and with ~3.8 million total games played in 2016, that's a lot of requests! I'm trying to be considerate of Blizzard by not parallelizing the scraping process and blasting their servers with hundreds of requests per second, so it'll take some time - I'd estimate that 2016 data will be ready sometime in August. It's possible that eventually I'll have the entire ladders history (all the way back to June 2008), but that's about 150 million total games - we'll see. Currently an EC2 t2.small takes about a minute per million games to crunch down to CSVs. Some rearchitecture may be required...
+        <b>A:</b> Logging each game requires an http request to the Ladders page, and with ~3.8 million total games played in 2016, that's a lot of requests! I'm trying to be considerate of Blizzard by not parallelizing the scraping process and blasting their servers with hundreds of requests per second, so it'll take some time - I'd estimate that 2016 data will be ready sometime in August. It's possible that eventually I'll have the entire ladders history (all the way back to June 2008), but that's about 150 million total games - we'll see. Currently an EC2 t2.small takes about 1 minute per million games to crunch down to CSVs. Some rearchitecture may be required...
       </div>
       <div class="aboutline">
         <b>Q:</b> <i>Can I play around with your data?</i>
       </div>
       <div class="aboutline">
         <b>A:</b> Sure! The daily CSV exports are <a href="/data/">here</a>, and the SQLite database files are on <a href="https://github.com/tylerkerr/wig-heat">Github</a> (though they won't always be up-to-date).
+      </div>
+      <div class="aboutline">
+        <b>Q:</b> <i>Does this represent RoC, or TFT, or both?</i>
+      </div>
+      <div class="aboutline">
+        <b>A:</b> All data is TFT-only, with the exception of the "All Realms" time series which counts both RoC and TFT games. See the <a href="/stats/">Statistics page</a> for details on how games are classified as RoC or TFT.
+      </div>
+      <div class="aboutline">
+        <b>Q:</b> <i>How are you accounting for lossbots/icon grinders?</i>
+      </div>
+      <div class="aboutline">
+        <b>A:</b> By ignoring games shorter than 3 minutes. This is <a href="/img/401fgl.png">not foolproof</a>, but this whole endeavor is pretty seat-of-the-pants.
       </div>
       <div class="aboutline">
         <b>Q:</b> <i>What about w3arena and netease?</i>
@@ -115,6 +122,12 @@
         <b>A:</b> "<b><u>W</u></b>arcraft" "<b><u>I</u></b>II" "<b><u>G</u></b>ames". e.g. "Do you want to wig?", "I'm wigging out", "It's prime time, there are wigs to be had"...
       </div>
       <div class="aboutline">
+        <b>Q:</b> <i>Heatmaps are weird on gametypes with fewer than 10 total games played?</i>
+      </div>
+      <div class="aboutline">
+        <b>A:</b> Yep
+      </div>
+      <div class="aboutline">
         <b>Q:</b> <i>web site doesn't work on my computer?</i>
       </div>
       <div class="aboutline">
@@ -124,7 +137,7 @@
         <b>Q:</b> <i>I'm bad at war3?</i>
       </div>
       <div class="aboutline">
-        <b>A:</b> sorry to hear that..<a href="http://classic.battle.net/war3/basics/rookiemistakes.shtml">don't forget about these bad boys</a> 
+        <b>A:</b> sorry to hear that..<a href="http://classic.battle.net/war3/basics/rookiemistakes.shtml">don't forget about these bad boys</a> 🤑
       </div>  
     </div>
   </div>

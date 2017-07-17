@@ -32,7 +32,7 @@ $('.statdiv.stats_import_wrap').on('scroll', function () {checkButtonNecessity()
 
 $(document).ready(function() {
 
-  var csvfile_import = "./data/gamecounts.csv".replace(/\&amp\;/g, '&');
+  var csvfile_import = "/data/gamecounts.csv".replace(/\&amp\;/g, '&');
   
   $('.statdiv .stats_import_wrap').CSVToTable( csvfile_import , { loadingText: 'crunching...', loadingImage: '../img/loading.gif', startLine: 0, tableClass: "stats_import", theadClass: "heading" }).bind("loadComplete",function() { 
     $('.statdiv .stats_import_wrap').find('TABLE').tablesorter({ widgets: ["zebra"] });      
