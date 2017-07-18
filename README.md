@@ -1,6 +1,8 @@
 # wig-heat
 a set of Python3 tools to scrape, process, and visualize the data on [Blizzard's war3 battle.net ladders listings](http://classic.battle.net/war3/ladder/w3xp-ladders.aspx?Gateway=Northrend).
 
+this is now live at [arranged.team](https://arranged.team/)!
+
 todo:
 
 ✅ sequential scraping with error handling
@@ -21,7 +23,7 @@ todo:
 
 ✅ creating interface for the visualizations
 
-❌ automating daily scraping and processing
+✅ automating daily scraping and processing
 
 
 data presentations:
