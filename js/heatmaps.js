@@ -5,7 +5,7 @@
     
     function invertColor(rgb) {
         var yuv = rgb2yuv(rgb);
-        var factor = 180;
+        var factor = 360;
         var threshold = 100;
         yuv.y = clamp(yuv.y + (yuv.y > threshold ? -factor : factor));
         return yuv2rgb(yuv);
