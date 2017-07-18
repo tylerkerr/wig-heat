@@ -1,7 +1,9 @@
 #!/bin/bash
 
 wigdir="$(pwd)"
+
 echo "[-] starting ${0##*/} at $(date)"
+
 echo "[-] scraping Northrend"
 $wigdir/wigscraper.py Northrend | tail -n 20
 echo "[-] scraping Azeroth"
@@ -10,6 +12,7 @@ echo "[-] scraping Lordaeron"
 $wigdir/wigscraper.py Lordaeron | tail -n 20
 echo "[-] scraping Kalimdor"
 $wigdir/wigscraper.py Kalimdor | tail -n 20
+
 echo "[-] entering maintenance mode"
 mv $wigdir/index.html $wigdir/index.disabled
 mv $wigdir/heatmaps/index.html $wigdir/heatmaps/index.disabled

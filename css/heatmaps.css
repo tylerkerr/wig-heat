@@ -25,7 +25,10 @@ text.axis-worktime {
 }
 
 .cellcount {
-    color: white;
+    /*fill: #555;*/
+    font-size: .85em;
+    font-family: Courier, monospace;
+    font-style: bold;
 }
 
 .heatmapbuttons {
