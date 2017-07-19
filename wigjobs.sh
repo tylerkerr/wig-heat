@@ -1,7 +1,7 @@
 #!/bin/bash
 
 wigdir=$(dirname "$0")
-cd wigdir
+cd $wigdir
 
 echo "[-] starting ${0##*/} at $(date)"
 
