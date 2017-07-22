@@ -39,6 +39,10 @@ data presentations:
 
 some useful gameIDs:
 
+azeroth 21190538 = jan 1 2015
+
+(728k games in 2015)
+
 azeroth 21919343 = jan 1 2016
 
 (518k games in 2016)
@@ -47,6 +51,10 @@ azeroth 22437878 = jan 1 2017
 
 azeroth 22671000 = june 20 2017 9pm
 
+
+northrend 71407047 = jan 1 2015
+
+(3.484m games in 2015)
 
 northrend 74891032 = jan 1 2016
 
@@ -57,12 +65,20 @@ northrend 76682523 = jan 1 2017
 northrend 77664000 = june 26 2017 2pm
 
 
+lordaeron 14277875 = jan 1 2015
+
+(366k games in 2015)
+
 lordaeron 14644695 = jan 1 2016
 
 (397k games in 2016)
 
 lordaeron 15042407 = jan 1 2017
 
+
+kalimdor 30143853 = jan 1 2015
+
+(1.280m games in 2015)
 
 kalimdor 31424145 = jan 1 2016
 

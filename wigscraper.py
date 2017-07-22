@@ -45,7 +45,11 @@ def downloadwig(gateway, gameid):
     fullurl = baseurl + '?Gateway=' + gateway + '&GameID=' + str(gameid)
     if checkforgameid(gameid):
         return {'status': 'exists', 'html': None}
-    response = get(fullurl)
+    try:
+        response = get(fullurl)
+    except:
+        sleep(10)
+        response = get(fullurl)
     if 'errormessage.html' in response.url:
         return {'status': 'error', 'html': None}
     else:
