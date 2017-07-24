@@ -139,8 +139,8 @@ def gettoday():
     return strftime('%Y-%m-%d')
 
 def gettomorrow():
-    tomorrow = strftime('%Y-%m-') + str(int(strftime('%d')) + 1)
-    return tomorrow
+    tomorrow = strftime('%Y-%m-%d', gmtime(int(parse(gettoday()).strftime('%s')) + 86400))
+    return tomorrow # that was a mouthful
 # --------------- ROC/TFT DIFFERENTIATION ---------------
 
 def tftratiorandom(gameid, tftratio): # randomly return true or false, weighted by the tft:roc ratio provided
