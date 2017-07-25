@@ -5,6 +5,7 @@ import os
 from collections import OrderedDict
 from sqlalchemy import *
 from datetime import datetime, timezone
+from dateutil.parser import parse
 from time import strftime, gmtime, time
 from math import floor, ceil
 from csv import DictWriter
@@ -141,6 +142,7 @@ def gettoday():
 def gettomorrow():
     tomorrow = strftime('%Y-%m-%d', gmtime(int(parse(gettoday()).strftime('%s')) + 86400))
     return tomorrow # that was a mouthful
+
 # --------------- ROC/TFT DIFFERENTIATION ---------------
 
 def tftratiorandom(gameid, tftratio): # randomly return true or false, weighted by the tft:roc ratio provided
