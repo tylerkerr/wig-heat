@@ -87,7 +87,7 @@
         <b>Q:</b> <i>How does this all work?</i>
       </div>
       <div class="aboutline">
-        <b>A:</b> Python 3, BeautifulSoup, SQLAlchemy/SQLite, d3.js, NVD3, and bash/cron. We first traverse each game's detail page in order (in <a href="https://github.com/tylerkerr/wig-heat/blob/master/wigscraper.py">wigscraper.py</a>), grabbing the GameID, date/time, gametype, game length, and map and shoving it all into a database. Once we have enough games, we can generate useful collections of data to be interpreted and displayed (done in <a href="https://github.com/tylerkerr/wig-heat/blob/master/wigquery.py">wigquery.py</a>). After millions of games have been crunched to useful data the form of CSVs, a static frontend displays the visualizations using d3.js, mostly via NVD3.
+        <b>A:</b> Python 3, BeautifulSoup, SQLAlchemy/SQLite, d3.js, NVD3, and bash/cron. We first traverse each game's detail page in order (in <a href="https://github.com/tylerkerr/wig-heat/blob/master/wigscraper.py">wigscraper.py</a>), grabbing the GameID, date/time, gametype, game length, and map and shoving it all into a database. Once we have enough games, we can generate useful collections of data to be interpreted and displayed (done in <a href="https://github.com/tylerkerr/wig-heat/blob/master/wigquery.py">wigquery.py</a>). After millions of games have been crunched to useful data in the form of CSVs, a static frontend displays the visualizations using d3.js, mostly via NVD3.
       </div>
       <div class="aboutline">
         <b>Q:</b> <i>How often is the data updated?</i>
