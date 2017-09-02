@@ -105,7 +105,7 @@
         <b>Q:</b> <i>Why does the data only cover 2017?</i>
       </div>
       <div class="aboutline">
-        <b>A:</b> Logging each game requires an http request to the Ladders page, and with ~3.8 million total games played in 2016, that's a lot of requests! I'm trying to be considerate of Blizzard by not parallelizing the scraping process and blasting their servers with hundreds of requests per second, so it'll take some time - I'd estimate that 2016 data will be ready sometime in August. It's possible that eventually I'll have the entire ladders history (all the way back to June 2008), but that's about 150 million total games - we'll see. Currently an EC2 t2.small takes about 1 minute per million games to crunch down to CSVs. Some rearchitecture may be required...
+        <b>A:</b> Logging each game requires an http request to the Ladders page, and with ~3.8 million total games played in 2016, that's a lot of requests! I'm trying to be considerate of Blizzard by not parallelizing the scraping process and blasting their servers with hundreds of requests per second, so it'll take some time - I'd estimate that 2016 data will be ready sometime in <s>August</s> September? It's possible that eventually I'll have the entire ladders history (all the way back to June 2008), but that's about 150 million total games - we'll see. Currently an EC2 t2.small takes about 1 minute per million games to crunch down to CSVs. Some rearchitecture may be required...
       </div>
       <div class="aboutline">
         <b>Q:</b> <i>Can I play around with your data?</i>
